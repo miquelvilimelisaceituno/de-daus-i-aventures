@@ -1,4 +1,6 @@
 import express, { type ErrorRequestHandler } from 'express';
+import { campaignsRouter } from './routes/campaigns';
+
 
 export function createApp() {
   const app = express();
@@ -9,6 +11,8 @@ export function createApp() {
   app.get('/api/health', (_req, res) => {
     res.json({ ok: true });
   });
+
+  app.use('/api/campaigns', campaignsRouter);
 
   // Qualsevol ruta que no existeix
   app.use((_req, res) => {
