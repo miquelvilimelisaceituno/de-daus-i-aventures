@@ -8,3 +8,4 @@ coverage/
 *.log
 firebase-service-account*.json
 *adminsdk*.json
+backend/src/generated/
