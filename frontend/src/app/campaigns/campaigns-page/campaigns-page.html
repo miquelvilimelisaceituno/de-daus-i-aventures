@@ -1,0 +1,21 @@
+<main>
+    <h1>Les meves campanyes</h1>
+
+    @if(campaigns.isLoading()){
+        <p>Carregant...</p>
+    } @else if (campaigns.error()) {
+        <p role="alert">No s'han pogut carregar les campanyes.</p>
+    } @else {
+        @for (campaign of campaigns.value(); track campaign.id){
+            <article>
+                <h2>{{ campaign.name}} </h2>
+                @if (campaign.description) {
+                    <p>{{ campaign.description}}</p>
+                }
+            </article>
+        } @empty {
+            <p>Encara no hi ha cap campanya.</p>
+        }
+    }
+
+</main>
