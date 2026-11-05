@@ -1,0 +1,25 @@
+generator client {
+  provider     = "prisma-client"
+  output       = "../src/generated/prisma"
+  moduleFormat = "cjs"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+model Campaign {
+  id          String    @id @default(uuid(7)) @db.Uuid
+  name        String    @db.VarChar(60)
+  description String?
+  imageUrl    String?   @map("image_url")
+  mapImageUrl String?   @map("map_image_url")
+  inviteCode  String    @unique @map("invite_code") @db.VarChar(8)
+  inviteOpen  Boolean   @default(true) @map("invite_open")
+  maxPlayers  Int       @default(6) @map("max_players")
+  archivedAt  DateTime? @map("archived_at") @db.Timestamptz
+  createdAt   DateTime  @default(now()) @map("created_at") @db.Timestamptz
+  updatedAt   DateTime  @updatedAt @map("updated_at") @db.Timestamptz
+
+  @@map("campaigns")
+}
