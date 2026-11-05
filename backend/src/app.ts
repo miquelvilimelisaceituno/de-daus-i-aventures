@@ -1,4 +1,6 @@
+import cors from 'cors';
 import express, { type ErrorRequestHandler } from 'express';
+import { env } from './config/env';
 import { campaignsRouter } from './routes/campaigns';
 
 
@@ -6,6 +8,7 @@ export function createApp() {
   const app = express();
 
   app.disable('x-powered-by');
+  app.use(cors({ origin: env.CORS_ORIGINS }));
   app.use(express.json());
 
   app.get('/api/health', (_req, res) => {

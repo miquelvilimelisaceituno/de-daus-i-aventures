@@ -12,6 +12,11 @@ const envSchema = z.object({
   NODE_ENV: z.enum(['development', 'test', 'production']).default('development'),
   PORT: z.coerce.number().int().positive().default(3000),
   DATABASE_URL: z.string().regex(/^postgres(ql)?:\/\//, 'Ha de ser una URL de PostgreSQL'),
+  // Orígens que poden llegir l'API des del navegador, separats per comes.
+  CORS_ORIGINS: z
+    .string()
+    .default('http://localhost:4200')
+    .transform((value) => value.split(',').map((origin) => origin.trim()).filter(Boolean)),
 });
 
 const parsed = envSchema.safeParse(process.env);
