@@ -1,0 +1,13 @@
+// Només variables i mixins de Sass: no genera CSS.
+// Als components: @use 'breakpoints' as *;
+
+$bp-tauleta: 768px;
+$bp-escriptori: 1200px;
+
+// Mobile first: el CSS de fora del mixin és per a mòbil;
+// el de dins s'aplica a partir de l'amplada indicada.
+@mixin des-de($bp) {
+  @media (min-width: $bp) {
+    @content;
+  }
+}
