@@ -1,0 +1,62 @@
+@use 'breakpoints' as *;
+
+:root {
+  // Colors (Guia d'estil, D23)
+  --c-fons: #f3ead7;
+  --c-superficie: #fbf6ea;
+  --c-text: #2b2118;
+  --c-text-sec: #6b5a47;
+  --c-primari: #8e2a1f;
+  --c-primari-hover: #6f1f16;
+  --c-or: #b08d3c; // només ornaments, mai text
+  --c-or-text: #7a5e1e;
+  --c-vora: #d8c8a8;
+  --c-vora-camp: #94805f;
+  --c-error: #a3241a;
+  --c-exit: #3e6b3a;
+  --c-avis: #8a5a00;
+
+  // Tipus d'encontre
+  --c-combat: #8e2a1f;
+  --c-social: #2f5d7c;
+  --c-exploracio: #3e6b3a;
+  --c-descobriment: #6a4c93;
+  --c-secret: #4a3f35;
+
+  // Famílies
+  --f-titol: 'Cinzel', Georgia, serif;
+  --f-text: 'Lora', Georgia, serif;
+
+  // Estils de text: pes mida/interlineat família (mòbil)
+  --t-h1: 600 1.625rem/2.125rem var(--f-titol); // 26/34
+  --t-h2: 600 1.25rem/1.75rem var(--f-titol); // 20/28
+  --t-h3: 700 1.125rem/1.625rem var(--f-text); // 18/26
+  --t-cos: 400 1rem/1.625rem var(--f-text); // 16/26
+  --t-interficie: 600 0.9375rem/1.25rem var(--f-text); // 15/20
+  --t-petit: 400 0.875rem/1.25rem var(--f-text); // 14/20
+  --t-mini: 600 0.75rem/1rem var(--f-text); // 12/16
+
+  // Formes i espais
+  --radi-s: 2px;
+  --radi-m: 4px;
+  --esp-1: 4px;
+  --esp-2: 8px;
+  --esp-3: 12px;
+  --esp-4: 16px;
+  --esp-6: 24px;
+  --esp-8: 32px;
+  --esp-12: 48px;
+  --amplada-max: 1120px;
+  --tactil-min: 44px;
+  --marge-lateral: var(--esp-4);
+
+  @include des-de($bp-tauleta) {
+    --marge-lateral: var(--esp-6);
+  }
+
+  @include des-de($bp-escriptori) {
+    --t-h1: 600 2.125rem/2.625rem var(--f-titol); // 34/42
+    --t-h2: 600 1.5rem/2rem var(--f-titol); // 24/32
+    --t-cos: 400 1.0625rem/1.75rem var(--f-text); // 17/28
+  }
+}
