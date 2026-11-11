@@ -26,7 +26,8 @@ const updateSchema = z.strictObject({
 });
 
 function sendValidationError(res: Response, error: z.ZodError) {
-  res.status(400).json({ error: 'Dades no vàlides', fields: z.flattenError(error).fieldErrors });
+  const { formErrors, fieldErrors } = z.flattenError(error);
+  res.status(400).json({ error: 'Dades no vàlides', fields: fieldErrors, general: formErrors });
 }
 
 // Si el registre no envia nom: el de Firebase o la part de l'email abans de l'@.
