@@ -2,6 +2,7 @@ import cors from 'cors';
 import express, { type ErrorRequestHandler } from 'express';
 import { env } from './config/env';
 import { campaignsRouter } from './routes/campaigns';
+import { meRouter } from './routes/me';
 
 
 export function createApp() {
@@ -16,6 +17,7 @@ export function createApp() {
   });
 
   app.use('/api/campaigns', campaignsRouter);
+  app.use('/api/me', meRouter);
 
   // Qualsevol ruta que no existeix
   app.use((_req, res) => {

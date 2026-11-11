@@ -23,3 +23,14 @@ model Campaign {
 
   @@map("campaigns")
 }
+
+model User {
+  id        String   @id @db.VarChar(128) // uid de Firebase (D9)
+  name      String   @db.VarChar(40)
+  avatarUrl String?  @map("avatar_url")
+  isAdmin   Boolean  @default(false) @map("is_admin")
+  createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz
+  updatedAt DateTime @updatedAt @map("updated_at") @db.Timestamptz
+
+  @@map("users")
+}

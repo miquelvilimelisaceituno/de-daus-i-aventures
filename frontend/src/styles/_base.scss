@@ -1,0 +1,82 @@
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  background: var(--c-fons);
+  color: var(--c-text);
+  font: var(--t-cos);
+  -webkit-font-smoothing: antialiased;
+}
+
+h1,
+h2,
+h3 {
+  margin: 0 0 var(--esp-4);
+}
+h1 { font: var(--t-h1); }
+h2 { font: var(--t-h2); }
+h3 { font: var(--t-h3); }
+
+p {
+  margin: 0 0 var(--esp-4);
+}
+
+a {
+  color: var(--c-primari);
+  &:hover { color: var(--c-primari-hover); }
+}
+
+// Focus de teclat: mai s'amaga (Guia d'estil)
+:focus-visible {
+  outline: 2px solid var(--c-primari);
+  outline-offset: 2px;
+}
+
+// Ornament 1: línia d'or de 64 px amb un rombe al centre, sota el títol de pàgina
+.titol-pagina {
+  position: relative;
+  padding-bottom: var(--esp-4);
+
+  &::before,
+  &::after {
+    content: '';
+    position: absolute;
+    left: 0;
+  }
+  &::before {
+    bottom: 3px;
+    width: 64px;
+    height: 1px;
+    background: var(--c-or);
+  }
+  &::after {
+    bottom: 0;
+    left: 29px;
+    width: 7px;
+    height: 7px;
+    background: var(--c-fons);
+    border: 1px solid var(--c-or);
+    transform: rotate(45deg);
+  }
+}
+
+// Ornament 2: separador de secció
+hr {
+  border: 0;
+  border-top: 1px solid var(--c-or);
+  margin: var(--esp-6) 0;
+}
+
+// Text només per a lectors de pantalla (botons amb només una icona)
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+}
