@@ -1,0 +1,17 @@
+<label class="etiqueta" [for]="id">{{ label() }}</label>
+<input
+  class="entrada"
+  [id]="id"
+  [type]="type()"
+  [attr.autocomplete]="autocomplete()"
+  [value]="value()"
+  [disabled]="disabled()"
+  [class.amb-error]="!!error()"
+  [attr.aria-invalid]="error() ? true : null"
+  [attr.aria-describedby]="error() ? errorId : null"
+  (input)="handleInput($event)"
+  (blur)="onTouched()"
+/>
+@if (error(); as message) {
+  <p class="error" [id]="errorId">{{ message }}</p>
+}
