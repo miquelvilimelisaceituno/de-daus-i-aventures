@@ -1,0 +1,27 @@
+@use 'breakpoints' as *;
+
+// Formulari estret i centrat: a mòbil ocupa tot l'ample amb el marge lateral.
+.pagina {
+  max-width: 400px;
+  margin: 0 auto;
+  padding: var(--esp-8) var(--marge-lateral);
+
+  @include des-de($bp-tauleta) {
+    padding-top: var(--esp-12);
+  }
+}
+
+.error-general {
+  margin: 0 0 var(--esp-4);
+  font: var(--t-petit);
+  color: var(--c-error);
+}
+
+.enviar {
+  width: 100%;
+}
+
+.alternativa {
+  margin-top: var(--esp-6);
+  text-align: center;
+}

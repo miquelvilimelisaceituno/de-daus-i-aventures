@@ -1,0 +1,36 @@
+<main class="pagina">
+  <h1 class="titol-pagina">Crea un compte</h1>
+
+  <form [formGroup]="form" (ngSubmit)="submit()" novalidate>
+    <app-field
+      label="Nom"
+      autocomplete="nickname"
+      formControlName="name"
+      [error]="nameError()"
+    />
+    <app-field
+      label="Email"
+      type="email"
+      autocomplete="email"
+      formControlName="email"
+      [error]="emailError()"
+    />
+    <app-field
+      label="Contrasenya (mínim 6 caràcters)"
+      type="password"
+      autocomplete="new-password"
+      formControlName="password"
+      [error]="passwordError()"
+    />
+
+    @if (formError(); as message) {
+      <p class="error-general" role="alert">{{ message }}</p>
+    }
+
+    <button appButton type="submit" class="enviar" [disabled]="pending()">
+      {{ pending() ? 'Creant el compte…' : 'Crea el compte' }}
+    </button>
+  </form>
+
+  <p class="alternativa">Ja tens compte? <a routerLink="/login">Inicia sessió</a></p>
+</main>
