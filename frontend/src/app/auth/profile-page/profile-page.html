@@ -1,0 +1,47 @@
+<main class="pagina">
+  <h1 class="titol-pagina">El meu perfil</h1>
+
+  @if (auth.profile(); as profile) {
+    <app-card class="targeta">
+      <div class="identitat">
+        @if (profile.avatarUrl && !avatarFailed()) {
+          <img class="avatar" [src]="profile.avatarUrl" alt="" (error)="avatarFailed.set(true)" />
+        } @else {
+          <span class="avatar inicial" aria-hidden="true">{{ initial(profile) }}</span>
+        }
+        <p class="nom">{{ profile.name }}</p>
+      </div>
+
+      <form [formGroup]="form" (ngSubmit)="submit()" novalidate>
+        <app-field
+          label="Nom"
+          autocomplete="nickname"
+          formControlName="name"
+          [error]="nameError()"
+        />
+        <app-field
+          label="Adreça de l’avatar (opcional)"
+          formControlName="avatarUrl"
+          [error]="avatarError()"
+        />
+
+        @if (formError(); as message) {
+          <p class="missatge error" role="alert">{{ message }}</p>
+        }
+        @if (saved()) {
+          <p class="missatge exit" role="status">Canvis desats</p>
+        }
+
+        <button appButton type="submit" [disabled]="pending()">
+          {{ pending() ? 'Desant…' : 'Desa els canvis' }}
+        </button>
+      </form>
+    </app-card>
+  } @else {
+    <p class="missatge error" role="alert">No s’ha pogut carregar el perfil.</p>
+    <button appButton type="button" (click)="retry()">Torna-ho a provar</button>
+  }
+
+  <hr />
+  <button appButton variant="secundari" type="button" (click)="logout()">Tanca la sessió</button>
+</main>

@@ -1,0 +1,44 @@
+// Input de la Guia d'estil: fons superfície, vora vora-camp, alçada 44, radi 2.
+:host {
+  display: block;
+  margin-bottom: var(--esp-4);
+}
+
+.etiqueta {
+  display: block;
+  margin-bottom: var(--esp-1);
+  font: var(--t-interficie);
+}
+
+.entrada {
+  width: 100%;
+  min-height: var(--tactil-min);
+  padding: 0 var(--esp-3);
+  background: var(--c-superficie);
+  color: var(--c-text);
+  border: 1px solid var(--c-vora-camp);
+  border-radius: var(--radi-s);
+  // 16 px com a mínim: amb menys, Safari d'iOS fa zoom en tocar el camp.
+  font: var(--t-cos);
+
+  &:hover {
+    border-color: var(--c-text);
+  }
+
+  &:disabled {
+    background: var(--c-fons);
+    color: var(--c-text-sec);
+  }
+
+  // Amb error: vora de 2 px. Es treu 1 px del padding perquè el text no es mogui.
+  &.amb-error {
+    border: 2px solid var(--c-error);
+    padding: 0 calc(var(--esp-3) - 1px);
+  }
+}
+
+.error {
+  margin: var(--esp-1) 0 0;
+  font: var(--t-petit);
+  color: var(--c-error);
+}

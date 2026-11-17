@@ -1,0 +1,36 @@
+// Botó primari (Guia d'estil): fons primari, text blanc, alçada 44, radi 2.
+:host {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--esp-2);
+  min-height: var(--tactil-min);
+  padding: 0 var(--esp-6);
+  background: var(--c-primari);
+  color: #fff;
+  border: 1px solid var(--c-primari);
+  border-radius: var(--radi-s);
+  font: var(--t-interficie);
+  cursor: pointer;
+}
+
+:host(:hover:not(:disabled)) {
+  background: var(--c-primari-hover);
+  border-color: var(--c-primari-hover);
+}
+
+:host(:disabled) {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+// Secundari (Guia d'estil): fons transparent, vora i text primari; hover fons superfície.
+:host(.secundari) {
+  background: transparent;
+  color: var(--c-primari);
+}
+
+:host(.secundari:hover:not(:disabled)) {
+  background: var(--c-superficie);
+  border-color: var(--c-primari);
+}

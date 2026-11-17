@@ -1,0 +1,8 @@
+// Targeta (Guia d'estil): sense ombra; la profunditat la dona la vora i el canvi de fons.
+:host {
+  display: block;
+  padding: var(--esp-4);
+  background: var(--c-superficie);
+  border: 1px solid var(--c-vora);
+  border-radius: var(--radi-m);
+}
