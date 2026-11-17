@@ -1,0 +1,17 @@
+<header class="capcalera">
+  <a class="logo" routerLink="/campanyes" aria-label="De Daus i Aventures, inici">
+    <span class="monograma" aria-hidden="true">DA</span>
+    <span class="nom" aria-hidden="true">De Daus i Aventures</span>
+  </a>
+
+  @if (auth.isSignedIn()) {
+    <a
+      class="perfil"
+      routerLink="/perfil"
+      routerLinkActive="actiu"
+      ariaCurrentWhenActive="page"
+    >
+      {{ auth.profile()?.name ?? 'El meu perfil' }}
+    </a>
+  }
+</header>

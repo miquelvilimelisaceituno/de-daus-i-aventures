@@ -1,0 +1,68 @@
+import { Component, inject, input, signal } from '@angular/core';
+import { AbstractControl, FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
+import { Router, RouterLink } from '@angular/router';
+import { Button } from '../../shared/ui/button/button';
+import { Field } from '../../shared/ui/field/field';
+import { authErrorMessage } from '../auth-errors';
+import { AuthService } from '../auth.service';
+import { safeReturnUrl } from '../return-url';
+
+@Component({
+  imports: [ReactiveFormsModule, RouterLink, Button, Field],
+  selector: 'app-login-page',
+  styleUrl: './login-page.scss',
+  templateUrl: './login-page.html',
+})
+export class LoginPage {
+  private readonly auth = inject(AuthService);
+  private readonly router = inject(Router);
+
+  /** ?returnUrl=... de l'adreça (withComponentInputBinding). El posaran els guards. */
+  readonly returnUrl = input<string>();
+
+  protected readonly form = inject(FormBuilder).nonNullable.group({
+    email: ['', [Validators.required, Validators.email]],
+    password: ['', Validators.required],
+  });
+
+  protected readonly pending = signal(false);
+  protected readonly submitted = signal(false);
+  /** Error de Firebase (credencials, xarxa...), ja traduït. */
+  protected readonly formError = signal<string | null>(null);
+
+  protected emailError(): string | null {
+    const control = this.form.controls.email;
+    if (!this.showErrors(control)) return null;
+    if (control.hasError('required')) return 'L’email és obligatori';
+    if (control.hasError('email')) return 'L’email no té un format vàlid';
+    return null;
+  }
+
+  protected passwordError(): string | null {
+    const control = this.form.controls.password;
+    if (!this.showErrors(control)) return null;
+    return control.hasError('required') ? 'La contrasenya és obligatòria' : null;
+  }
+
+  protected async submit(): Promise<void> {
+    this.submitted.set(true);
+    this.formError.set(null);
+    if (this.form.invalid || this.pending()) return;
+
+    const { email, password } = this.form.getRawValue();
+    this.pending.set(true);
+    try {
+      await this.auth.login(email, password);
+      await this.router.navigateByUrl(safeReturnUrl(this.returnUrl()));
+    } catch (err) {
+      this.formError.set(authErrorMessage(err));
+    } finally {
+      this.pending.set(false);
+    }
+  }
+
+  // Els errors es mostren quan l'usuari ha sortit del camp o ha intentat enviar.
+  private showErrors(control: AbstractControl): boolean {
+    return control.invalid && (control.touched || this.submitted());
+  }
+}
