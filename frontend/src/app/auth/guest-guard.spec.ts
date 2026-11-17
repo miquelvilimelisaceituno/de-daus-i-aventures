@@ -9,10 +9,10 @@ import { AUTH_GATEWAY } from './auth-gateway';
 import { guestGuard } from './guest-guard';
 import { FakeAuthGateway } from './testing/fake-auth-gateway';
 
-@Component({ template: 'login' })
+@Component({ selector: 'app-login-stub', template: 'login' })
 class LoginStub {}
 
-@Component({ template: 'campanyes' })
+@Component({ selector: 'app-campaigns-stub', template: 'campanyes' })
 class CampaignsStub {}
 
 const PROFILE = { id: 'uid-1', name: 'Miquel', avatarUrl: null, isAdmin: false };

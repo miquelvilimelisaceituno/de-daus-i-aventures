@@ -9,10 +9,10 @@ import { AUTH_GATEWAY } from './auth-gateway';
 import { authGuard } from './auth-guard';
 import { FakeAuthGateway } from './testing/fake-auth-gateway';
 
-@Component({ template: 'privada' })
+@Component({ selector: 'app-private-stub', template: 'privada' })
 class PrivatePage {}
 
-@Component({ template: 'login' })
+@Component({ selector: 'app-login-stub', template: 'login' })
 class LoginStub {}
 
 const PROFILE = { id: 'uid-1', name: 'Miquel', avatarUrl: null, isAdmin: false };

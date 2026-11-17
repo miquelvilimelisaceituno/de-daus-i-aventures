@@ -170,4 +170,35 @@ describe('AuthService', () => {
     expect(auth.status()).toBe('signedOut');
     expect(auth.profile()).toBeNull();
   });
+
+    it('updateProfile: envia els canvis amb PATCH i actualitza el perfil', async () => {
+    gateway.user = { uid: 'uid-1', email: 'miquel@example.com' };
+    const auth = createService();
+    await settle();
+    httpMock.expectOne(ME).flush(PROFILE);
+    await auth.whenSettled();
+
+    const update = auth.updateProfile({ name: 'Miquel el Savi', avatarUrl: null });
+    const req = httpMock.expectOne(ME);
+    expect(req.request.method).toBe('PATCH');
+    expect(req.request.body).toEqual({ name: 'Miquel el Savi', avatarUrl: null });
+    req.flush({ ...PROFILE, name: 'Miquel el Savi' });
+    await update;
+
+    expect(auth.profile()?.name).toBe('Miquel el Savi');
+  });
+
+  it('updateProfile: si l’API falla, llança l’error i no toca el perfil', async () => {
+    gateway.user = { uid: 'uid-1', email: 'miquel@example.com' };
+    const auth = createService();
+    await settle();
+    httpMock.expectOne(ME).flush(PROFILE);
+    await auth.whenSettled();
+
+    const update = auth.updateProfile({ name: 'x' });
+    httpMock.expectOne(ME).flush({ error: 'Dades no vàlides' }, { status: 400, statusText: 'Bad Request' });
+
+    await expect(update).rejects.toBeTruthy();
+    expect(auth.profile()).toEqual(PROFILE);
+  });
 });

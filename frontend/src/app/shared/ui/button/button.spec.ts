@@ -4,12 +4,20 @@ import { Button } from './button';
 import { By } from '@angular/platform-browser';
 
 @Component({
+  selector: 'app-button-host',
   imports: [Button],
   template: `<button appButton type="submit" [disabled]="disabled()">Entrar</button>`,
 })
 class Host {
   readonly disabled = signal(false);
 }
+
+@Component({
+  selector: 'app-button-secondary-host',
+  imports: [Button],
+  template: `<button appButton variant="secundari" type="button">Tanca la sessió</button>`,
+})
+class SecondaryHost {}
 
 describe('Button', () => {
   async function render() {
@@ -41,5 +49,15 @@ describe('Button', () => {
     const applied = fixture.debugElement.query(By.directive(Button));
 
     expect(applied?.nativeElement.tagName).toBe('BUTTON');
+  });
+
+  it('per defecte és primari; amb variant="secundari" porta la classe secundari', async () => {
+    const { button } = await render();
+    expect(button.classList.contains('secundari')).toBe(false);
+
+    const fixture = TestBed.createComponent(SecondaryHost);
+    await fixture.whenStable();
+    const secondary = (fixture.nativeElement as HTMLElement).querySelector('button')!;
+    expect(secondary.classList.contains('secundari')).toBe(true);
   });
 });

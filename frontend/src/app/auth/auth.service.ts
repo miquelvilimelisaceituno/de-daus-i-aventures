@@ -59,6 +59,14 @@ export class AuthService {
     await this.run(() => this.gateway.signOut());
   }
 
+  /** Canvia el nom o l'avatar (PATCH /api/me, HU-03) i actualitza el perfil de tota l'app. */
+  async updateProfile(changes: { name?: string; avatarUrl?: string | null }): Promise<Profile> {
+    const profile = await firstValueFrom(this.http.patch<Profile>(this.url, changes));
+    this._profile.set(profile);
+    this._profileError.set(false);
+    return profile;
+  }
+  
   /** Torna a demanar el perfil (per exemple, si l'API estava adormida). */
   async reloadProfile(): Promise<void> {
     if (!this.currentUid) return;
