@@ -13,7 +13,9 @@ import {
   toCampaignDetail,
   toCampaignView,
 } from '../campaigns/campaign-view';
-import { createCampaign, ProfileNotFoundError } from '../campaigns/create-campaign';
+import { createCampaign } from '../campaigns/create-campaign';
+import { withFreshInviteCode } from '../campaigns/invite-code';
+import { joinCampaign } from '../campaigns/join-campaign';
 import { prisma } from '../db/prisma';
 import { sendValidationError } from '../http/validation';
 
@@ -65,16 +67,26 @@ campaignsRouter.post('/', async (req, res) => {
     return;
   }
 
-  try {
-    const campaign = await createCampaign(currentUser(req).uid, parsed.data);
-    res.status(201).json(toCampaignView(campaign, 'master'));
-  } catch (err) {
-    if (err instanceof ProfileNotFoundError) {
-      res.status(404).json({ error: 'Perfil no trobat' });
-      return;
-    }
-    throw err;
+  // Si l'usuari no té perfil, createCampaign llança un HttpError 404 i el respon app.ts.
+  const campaign = await createCampaign(currentUser(req).uid, parsed.data);
+  res.status(201).json(toCampaignView(campaign, 'master'));
+});
+
+const joinSchema = z.strictObject({
+  code: z.string().trim().min(1, 'Escriu el codi').max(20),
+});
+
+// POST /api/campaigns/join → unir-se com a jugador amb un codi (HU-12).
+// Ha d'anar abans del bloc /:cid (vegeu el comentari de sota).
+campaignsRouter.post('/join', async (req, res) => {
+  const parsed = joinSchema.safeParse(req.body ?? {});
+  if (!parsed.success) {
+    sendValidationError(res, parsed.error);
+    return;
   }
+
+  const campaign = await joinCampaign(currentUser(req).uid, parsed.data.code);
+  res.json(toCampaignView(campaign, 'player'));
 });
 
 // ---------------------------------------------------------------------------
@@ -110,4 +122,17 @@ campaignRouter.patch('/', requireRole('master'), requireActiveCampaign, async (r
     select: CAMPAIGN_DETAIL_SELECT,
   });
   res.json(toCampaignDetail(campaign, role));
+});
+
+// POST /api/campaigns/:cid/invite-code → codi nou; l'antic deixa de funcionar (màster, HU-11).
+campaignRouter.post('/invite-code', requireRole('master'), requireActiveCampaign, async (req, res) => {
+  const { campaignId } = currentMember(req);
+  const campaign = await withFreshInviteCode((inviteCode) =>
+    prisma.campaign.update({
+      where: { id: campaignId },
+      data: { inviteCode },
+      select: { inviteCode: true },
+    }),
+  );
+  res.json(campaign);
 });
