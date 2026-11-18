@@ -1,9 +1,10 @@
-import { Router, type Response } from 'express';
+import { Router } from 'express';
 import { z } from 'zod';
 import { currentUser, requireAuth } from '../auth/require-auth';
 import type { AuthUser } from '../auth/verify-token';
 import { prisma } from '../db/prisma';
 import { Prisma } from '../generated/prisma/client';
+import { sendValidationError } from '../http/validation';
 
 export const meRouter = Router();
 meRouter.use(requireAuth);
@@ -24,11 +25,6 @@ const updateSchema = z.strictObject({
   name: nameSchema.optional(),
   avatarUrl: z.url({ protocol: /^https?$/ }).max(500).nullable().optional(),
 });
-
-function sendValidationError(res: Response, error: z.ZodError) {
-  const { formErrors, fieldErrors } = z.flattenError(error);
-  res.status(400).json({ error: 'Dades no vàlides', fields: fieldErrors, general: formErrors });
-}
 
 // Si el registre no envia nom: el de Firebase o la part de l'email abans de l'@.
 function defaultName(auth: AuthUser): string {
