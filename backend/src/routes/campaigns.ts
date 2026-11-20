@@ -16,6 +16,7 @@ import {
 import { createCampaign } from '../campaigns/create-campaign';
 import { withFreshInviteCode } from '../campaigns/invite-code';
 import { joinCampaign } from '../campaigns/join-campaign';
+import { listMembers, removeMember } from '../campaigns/members';
 import { prisma } from '../db/prisma';
 import { sendValidationError } from '../http/validation';
 
@@ -135,4 +136,15 @@ campaignRouter.post('/invite-code', requireRole('master'), requireActiveCampaign
     }),
   );
   res.json(campaign);
+});
+
+// GET /api/campaigns/:cid/members → membres actius (qualsevol membre).
+campaignRouter.get('/members', async (req, res) => {
+  res.json(await listMembers(currentMember(req).campaignId));
+});
+
+// DELETE /api/campaigns/:cid/members/:userId → sortir (jo mateix, HU-15) o expulsar (màster, HU-14).
+campaignRouter.delete('/members/:userId', async (req, res) => {
+  await removeMember(currentMember(req), req.params.userId);
+  res.status(204).end();
 });
