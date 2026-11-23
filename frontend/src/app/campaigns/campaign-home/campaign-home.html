@@ -1,0 +1,42 @@
+@if (context.campaign(); as campaign) {
+  <main class="pagina">
+    <h1 class="titol-pagina">{{ campaign.name }}</h1>
+
+    <p class="etiquetes">
+      <span class="etiqueta">{{ roleLabels[campaign.role] }}</span>
+      @if (context.isArchived()) {
+        <span class="etiqueta arxivada">Arxivada</span>
+      }
+    </p>
+
+    @if (context.isArchived()) {
+      <p class="avis" role="note">Aquesta campanya està arxivada: només es pot consultar.</p>
+    }
+
+    @if (campaign.description) {
+      <p>{{ campaign.description }}</p>
+    }
+
+    <p class="properament">Aquí hi haurà el diari: l’última sessió, la propera data i el grup.</p>
+
+    <section aria-labelledby="titol-grup">
+      <h2 id="titol-grup" class="titol-seccio">El grup</h2>
+      @if (members.error()) {
+        <p class="missatge error" role="alert">No s’han pogut carregar els membres.</p>
+        <button appButton variant="secundari" type="button" (click)="members.reload()">Torna-ho a provar</button>
+      } @else {
+        <app-member-list [members]="members.value()" />
+      }
+    </section>
+
+    @if (campaign.role === 'player') {
+      <hr />
+      @if (leaveError(); as message) {
+        <p class="missatge error" role="alert">{{ message }}</p>
+      }
+      <button appButton variant="secundari" type="button" [disabled]="leaving()" (click)="leave()">
+        {{ leaving() ? 'Sortint…' : 'Surt de la campanya' }}
+      </button>
+    }
+  </main>
+}

@@ -1,7 +1,6 @@
-import { Component, forwardRef, input, signal } from '@angular/core';
+import { Component, forwardRef, input, signal, inject } from '@angular/core';
 import { ControlValueAccessor, NG_VALUE_ACCESSOR } from '@angular/forms';
-
-let nextId = 0;
+import { UniqueIdService } from '../../unique-id.service';  
 
 /**
  * Camp de formulari de la Guia d'estil: etiqueta, input i missatge d'error.
@@ -23,7 +22,7 @@ export class Field implements ControlValueAccessor {
   /** Missatge d'error ja traduït. Null o buit → sense error. */
   readonly error = input<string | null>(null);
 
-  protected readonly id = `camp-${nextId++}`;
+  protected readonly id = inject(UniqueIdService).next('camp');
   protected readonly errorId = `${this.id}-error`;
   protected readonly value = signal('');
   protected readonly disabled = signal(false);

@@ -1,0 +1,49 @@
+<div class="campanya">
+  <nav class="barra" aria-label="Seccions de la campanya">
+    <p class="nom-campanya">{{ context.campaign()?.name }}</p>
+    <ul class="elements">
+      <li>
+        <a
+          class="element"
+          routerLink="."
+          routerLinkActive="actiu"
+          [routerLinkActiveOptions]="{ exact: true }"
+          ariaCurrentWhenActive="page"
+        >
+          <svg lucideBookOpen></svg>
+          <span>Diari</span>
+        </a>
+      </li>
+      <li>
+        <a class="element" routerLink="compendi" routerLinkActive="actiu" ariaCurrentWhenActive="page">
+          <svg lucideLibrary></svg>
+          <span>Compendi</span>
+        </a>
+      </li>
+      <li>
+        <a class="element" routerLink="calendari" routerLinkActive="actiu" ariaCurrentWhenActive="page">
+          <svg lucideCalendarDays></svg>
+          <span>Calendari</span>
+        </a>
+      </li>
+      <li>
+        <a class="element" routerLink="mapa" routerLinkActive="actiu" ariaCurrentWhenActive="page">
+          <svg lucideMap></svg>
+          <span>Mapa</span>
+        </a>
+      </li>
+      @if (context.isMaster()) {
+        <li>
+          <a class="element" routerLink="config" routerLinkActive="actiu" ariaCurrentWhenActive="page">
+            <svg lucideSettings></svg>
+            <span>Configuració</span>
+          </a>
+        </li>
+      }
+    </ul>
+  </nav>
+
+  <div class="contingut">
+    <router-outlet />
+  </div>
+</div>
