@@ -1,10 +1,11 @@
 import cors from 'cors';
 import express, { type ErrorRequestHandler } from 'express';
+import { z } from 'zod';
 import { env } from './config/env';
 import { HttpError } from './http/http-error';
+import { sendValidationError } from './http/validation';
 import { campaignsRouter } from './routes/campaigns';
-import { meRouter } from './routes/me';
-
+import { meRouter } from './routes/me.routes';
 
 export function createApp() {
   const app = express();
@@ -25,9 +26,15 @@ export function createApp() {
     res.status(404).json({ error: 'No trobat' });
   });
 
-  // Errors: els HttpError porten el seu codi; la resta són errors no controlats (500).
-  // Express 5 hi envia també els errors de les rutes async.
+  // Errors. Express 5 hi envia també els errors dels controladors async.
+  // - ZodError: un controlador ha validat un cos no vàlid → 400 { error, fields, general } (D44).
+  // - HttpError: un servei ha aplicat una regla de negoci → el seu codi.
+  // - La resta són errors no controlats → 500.
   const errorHandler: ErrorRequestHandler = (err, _req, res, _next) => {
+    if (err instanceof z.ZodError) {
+      sendValidationError(res, err);
+      return;
+    }
     if (err instanceof HttpError) {
       res.status(err.status).json({ error: err.message });
       return;

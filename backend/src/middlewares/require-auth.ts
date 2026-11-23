@@ -1,5 +1,5 @@
 import type { Request, RequestHandler } from 'express';
-import { verifyToken, type AuthUser } from './verify-token';
+import { verifyToken, type AuthUser } from '../auth/verify-token';
 
 // Afegeix req.auth al tipus Request d'Express.
 declare global {

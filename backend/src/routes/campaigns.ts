@@ -1,6 +1,6 @@
 import { Router } from 'express';
 import { z } from 'zod';
-import { currentUser, requireAuth } from '../auth/require-auth';
+import { currentUser, requireAuth } from '../middlewares/require-auth';
 import {
   currentMember,
   loadMembership,

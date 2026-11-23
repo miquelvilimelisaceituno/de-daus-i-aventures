@@ -1,7 +1,7 @@
 import type { Request, RequestHandler } from 'express';
 import { prisma } from '../db/prisma';
 import type { MembershipRole } from '../generated/prisma/enums';
-import { currentUser } from './require-auth';
+import { currentUser } from '../middlewares/require-auth';
 
 /** Qui soc dins de la campanya de la URL. Ho omple loadMembership. */
 export interface CampaignMember {
