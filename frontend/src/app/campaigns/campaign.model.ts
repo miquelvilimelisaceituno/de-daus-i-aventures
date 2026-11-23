@@ -2,6 +2,9 @@
 
 export type CampaignRole = 'master' | 'player';
 
+/** Com es mostra cada rol a la interfície. */
+export const ROLE_LABELS: Record<CampaignRole, string> = { master: 'Màster', player: 'Jugador' };
+
 /** Una campanya de «Les meves campanyes», amb el meu rol. */
 export interface Campaign {
   id: string;

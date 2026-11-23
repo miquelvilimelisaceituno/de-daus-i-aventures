@@ -1,0 +1,22 @@
+@if (context.campaign(); as campaign) {
+  <main class="pagina">
+    <h1 class="titol-pagina">{{ campaign.name }}</h1>
+
+    <p class="etiquetes">
+      <span class="etiqueta">{{ roleLabels[campaign.role] }}</span>
+      @if (context.isArchived()) {
+        <span class="etiqueta arxivada">Arxivada</span>
+      }
+    </p>
+
+    @if (context.isArchived()) {
+      <p class="avis" role="note">Aquesta campanya està arxivada: només es pot consultar.</p>
+    }
+
+    @if (campaign.description) {
+      <p>{{ campaign.description }}</p>
+    }
+
+    <p class="properament">Aquí hi haurà el diari: l’última sessió, la propera data i el grup.</p>
+  </main>
+}

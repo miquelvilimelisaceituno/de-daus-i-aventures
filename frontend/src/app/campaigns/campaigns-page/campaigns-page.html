@@ -22,10 +22,6 @@
     </button>
   </div>
 
-  @if (success(); as message) {
-    <p class="missatge exit" role="status">{{ message }}</p>
-  }
-
   @switch (panel()) {
     @case ('create') {
       <app-card class="formulari">
@@ -66,11 +62,13 @@
     <ul class="llista">
       @for (campaign of campaigns.value(); track campaign.id) {
         <li>
-          <app-card>
+          <app-card class="targeta">
             <article>
-              <h2 class="nom">{{ campaign.name }}</h2>
+              <h2 class="nom">
+                <a class="enllac" [routerLink]="['/c', campaign.id]">{{ campaign.name }}</a>
+              </h2>
               <p class="etiquetes">
-                <span class="etiqueta">{{ roleLabel(campaign) }}</span>
+                <span class="etiqueta">{{ roleLabels[campaign.role] }}</span>
                 @if (campaign.archivedAt) {
                   <span class="etiqueta arxivada">Arxivada</span>
                 }

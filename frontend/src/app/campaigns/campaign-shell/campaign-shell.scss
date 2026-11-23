@@ -1,0 +1,103 @@
+@use 'breakpoints' as *;
+
+$alcada-barra: 64px;
+$amplada-menu: 220px;
+
+// Mòbil: el contingut deixa lloc a la barra fixa de sota.
+.contingut {
+  padding-bottom: $alcada-barra;
+}
+
+.barra {
+  position: fixed;
+  inset: auto 0 0;
+  z-index: 10;
+  background: var(--c-superficie);
+  border-top: 1px solid var(--c-vora);
+}
+
+// El nom de la campanya només hi cap al menú lateral.
+.nom-campanya {
+  display: none;
+}
+
+.elements {
+  display: flex;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+
+  li {
+    flex: 1;
+  }
+}
+
+.element {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: var(--esp-1);
+  height: $alcada-barra;
+  color: var(--c-text-sec);
+  font: var(--t-mini);
+  text-decoration: none;
+
+  // Element de menú actiu (Guia d'estil): text primari i línia de 2 px a sota (mòbil).
+  &.actiu {
+    color: var(--c-primari);
+    box-shadow: inset 0 -2px 0 var(--c-primari);
+  }
+}
+
+// Escriptori: menú lateral fix a l'esquerra.
+@include des-de($bp-escriptori) {
+  .campanya {
+    display: grid;
+    grid-template-columns: $amplada-menu 1fr;
+    align-items: start;
+  }
+
+  .contingut {
+    padding-bottom: 0;
+  }
+
+  .barra {
+    position: sticky;
+    top: 0;
+    min-height: calc(100vh - 57px); // alçada de la capçalera + la seva vora
+    border-top: 0;
+    border-right: 1px solid var(--c-vora);
+    padding: var(--esp-6) 0;
+  }
+
+  .nom-campanya {
+    display: block;
+    margin: 0 var(--esp-4) var(--esp-4);
+    font: var(--t-h3);
+    color: var(--c-text);
+  }
+
+  .elements {
+    flex-direction: column;
+  }
+
+  .element {
+    flex-direction: row;
+    justify-content: flex-start;
+    gap: var(--esp-3);
+    height: var(--tactil-min);
+    padding: 0 var(--esp-4);
+    font: var(--t-interficie);
+
+    svg {
+      width: 20px;
+      height: 20px;
+    }
+
+    // Escriptori: la línia de l'element actiu va a l'esquerra.
+    &.actiu {
+      box-shadow: inset 2px 0 0 var(--c-primari);
+    }
+  }
+}

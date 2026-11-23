@@ -1,11 +1,12 @@
 import { Component, inject, signal } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { fieldError } from '../../shared/forms/field-error';
+import { Router, RouterLink } from '@angular/router';
 import { apiErrorMessage } from '../../shared/http/api-error';
 import { Button } from '../../shared/ui/button/button';
 import { Card } from '../../shared/ui/card/card';
 import { Field } from '../../shared/ui/field/field';
-import { Campaign } from '../campaign.model';
+import { Campaign, ROLE_LABELS } from '../campaign.model';
 import { CampaignService } from '../campaign.service';
 
 /** Mateixes regles que POST /api/campaigns i POST /api/campaigns/join. */
@@ -16,13 +17,14 @@ const CODE_MAX = 20;
 type Panel = 'none' | 'create' | 'join';
 
 @Component({
-  imports: [ReactiveFormsModule, Button, Card, Field],
+  imports: [ReactiveFormsModule, RouterLink, Button, Card, Field],
   selector: 'app-campaigns-page',
   styleUrl: './campaigns-page.scss',
   templateUrl: './campaigns-page.html',
 })
 export class CampaignsPage {
   private readonly campaignService = inject(CampaignService);
+  private readonly router = inject(Router);
   private readonly fb = inject(FormBuilder).nonNullable;
 
   protected readonly campaigns = this.campaignService.list();
@@ -32,8 +34,7 @@ export class CampaignsPage {
   protected readonly pending = signal(false);
   protected readonly submitted = signal(false);
   protected readonly formError = signal<string | null>(null);
-  /** Missatge d'èxit de l'última acció («Has creat…», «T'has unit…»). */
-  protected readonly success = signal<string | null>(null);
+  protected readonly roleLabels = ROLE_LABELS;
 
   protected readonly createForm = this.fb.group({
     name: ['', [Validators.required, Validators.minLength(NAME_MIN), Validators.maxLength(NAME_MAX)]],
@@ -64,51 +65,42 @@ export class CampaignsPage {
     this.panel.set(this.panel() === panel ? 'none' : panel);
     this.submitted.set(false);
     this.formError.set(null);
-    this.success.set(null);
   }
 
   protected submitCreate(): Promise<void> {
     const { name } = this.createForm.controls;
     // Un nom només d'espais compta com a buit; «  ab » té 2 caràcters, no 4.
     name.setValue(name.value.trim());
-    return this.send(this.createForm.invalid, async () => {
-      const campaign = await this.campaignService.create({ name: name.value });
-      this.createForm.reset();
-      return `Has creat «${campaign.name}». Ja n'ets el màster.`;
-    }, 'No s’ha pogut crear la campanya. Torna-ho a provar');
+    return this.send(
+      this.createForm.invalid,
+      () => this.campaignService.create({ name: name.value }),
+      'No s’ha pogut crear la campanya. Torna-ho a provar',
+    );
   }
 
   protected submitJoin(): Promise<void> {
     const { code } = this.joinForm.controls;
     code.setValue(code.value.trim());
-    return this.send(this.joinForm.invalid, async () => {
-      const campaign = await this.campaignService.join(code.value);
-      this.joinForm.reset();
-      return `T’has unit a «${campaign.name}».`;
-    }, 'No s’ha pogut unir a la campanya. Torna-ho a provar');
-  }
-
-  protected roleLabel(campaign: Campaign): string {
-    return campaign.role === 'master' ? 'Màster' : 'Jugador';
+    return this.send(
+      this.joinForm.invalid,
+      () => this.campaignService.join(code.value),
+      'No s’ha pogut unir a la campanya. Torna-ho a provar',
+    );
   }
 
   /**
    * Envia un formulari: no fa res si és invàlid o si ja n'hi ha un en curs (doble clic),
-   * mostra l'error de l'API si falla i, si va bé, tanca el formulari i recarrega la llista.
+   * mostra l'error de l'API si falla i, si va bé, porta l'usuari a la campanya i recarrega la llista.
    */
-  private async send(invalid: boolean, action: () => Promise<string>, fallback: string): Promise<void> {
+  private async send(invalid: boolean, action: () => Promise<Campaign>, fallback: string): Promise<void> {
     this.submitted.set(true);
     this.formError.set(null);
-    this.success.set(null);
     if (invalid || this.pending()) return;
 
     this.pending.set(true);
     try {
-      const message = await action();
-      this.panel.set('none');
-      this.submitted.set(false);
-      this.success.set(message);
-      this.campaigns.reload();
+      const campaign = await action();
+      await this.router.navigate(['/c', campaign.id]);
     } catch (error) {
       this.formError.set(apiErrorMessage(error, fallback));
     } finally {

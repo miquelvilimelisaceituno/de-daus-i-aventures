@@ -5,6 +5,7 @@ import { environment } from '../../../environments/environment';
 import { CONNECTION_ERROR } from '../../shared/http/api-error';
 import { Campaign } from '../campaign.model';
 import { CampaignsPage } from './campaigns-page';
+import { provideRouter, Router } from '@angular/router';
 
 const URL = `${environment.apiUrl}/campaigns`;
 
@@ -32,12 +33,14 @@ describe('CampaignsPage', () => {
   let fixture: ComponentFixture<CampaignsPage>;
   let httpMock: HttpTestingController;
   let page: HTMLElement;
+  let navigate: ReturnType<typeof vi.spyOn>;
 
   beforeEach(() => {
     TestBed.configureTestingModule({
-      providers: [provideHttpClient(), provideHttpClientTesting()],
+      providers: [provideRouter([]), provideHttpClient(), provideHttpClientTesting()],
     });
     httpMock = TestBed.inject(HttpTestingController);
+    navigate = vi.spyOn(TestBed.inject(Router), 'navigate').mockResolvedValue(true);
     fixture = TestBed.createComponent(CampaignsPage);
     page = fixture.nativeElement as HTMLElement;
   });
@@ -124,6 +127,12 @@ describe('CampaignsPage', () => {
       expect(alert()).toBeUndefined();
       expect(titles()).toEqual(['El final infinit']);
     });
+
+    it('links each card to its campaign', async () => {
+      await flushList([MASTER]);
+
+      expect(page.querySelector('article a')?.getAttribute('href')).toBe('/c/c1');
+    });
   });
 
   describe('create a campaign', () => {
@@ -132,7 +141,7 @@ describe('CampaignsPage', () => {
       await openForm('Crea una campanya');
     });
 
-    it('creates it, closes the form and reloads the list', async () => {
+    it('creates it and opens the new campaign', async () => {
       await typeAndSubmit('  El final infinit  ');
 
       const req = httpMock.expectOne({ url: URL, method: 'POST' });
@@ -140,10 +149,7 @@ describe('CampaignsPage', () => {
       req.flush(MASTER, { status: 201, statusText: 'Created' });
       await stable();
 
-      expect(status()).toContain('Has creat «El final infinit»');
-      expect(page.querySelector('form')).toBeNull();
-      await flushList([MASTER]);
-      expect(titles()).toEqual(['El final infinit']);
+      expect(navigate).toHaveBeenCalledWith(['/c', 'c1']);
     });
 
     it('does not call the API when the name is too short', async () => {
@@ -164,7 +170,7 @@ describe('CampaignsPage', () => {
       expect(button('Creant…').disabled).toBe(true);
       req.flush(MASTER, { status: 201, statusText: 'Created' });
       await stable();
-      await flushList([MASTER]);
+      expect(navigate).toHaveBeenCalledTimes(1);
     });
 
     it('keeps the form and the typed name when the server cannot be reached', async () => {
@@ -185,7 +191,7 @@ describe('CampaignsPage', () => {
       await openForm('Uneix-te amb un codi');
     });
 
-    it('joins, shows the campaign and reloads the list', async () => {
+    it('joins and opens the campaign', async () => {
       await typeAndSubmit(' drac2024 ');
 
       const req = httpMock.expectOne({ url: `${URL}/join`, method: 'POST' });
@@ -193,9 +199,7 @@ describe('CampaignsPage', () => {
       req.flush({ ...MASTER, role: 'player', inviteCode: undefined });
       await stable();
 
-      expect(status()).toContain('T’has unit a «El final infinit»');
-      await flushList([{ ...MASTER, role: 'player', inviteCode: undefined }]);
-      expect(page.querySelector('article')?.textContent).toContain('Jugador');
+      expect(navigate).toHaveBeenCalledWith(['/c', 'c1']);
     });
 
     it.each([
@@ -211,6 +215,7 @@ describe('CampaignsPage', () => {
       await stable();
 
       expect(alert()).toBe(message);
+      expect(navigate).not.toHaveBeenCalled();
     });
 
     it('clears the error when a later attempt succeeds', async () => {
@@ -228,8 +233,7 @@ describe('CampaignsPage', () => {
       await stable();
 
       expect(alert()).toBeUndefined();
-      expect(status()).toContain('T’has unit');
-      await flushList([{ ...MASTER, role: 'player', inviteCode: undefined }]);
+      expect(navigate).toHaveBeenCalledWith(['/c', 'c1']);
     });
 
     it('does not switch forms while a request is in flight', async () => {
