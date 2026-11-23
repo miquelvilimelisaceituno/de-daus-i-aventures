@@ -1,42 +1,12 @@
-@use 'breakpoints' as *;
-
-.pagina {
-  max-width: 720px;
-  margin: 0 auto;
-  padding: var(--esp-8) var(--marge-lateral);
-
-  @include des-de($bp-tauleta) {
-    padding-top: var(--esp-12);
-  }
+.titol-seccio {
+  font: var(--t-h3);
 }
 
-.etiquetes {
-  display: flex;
-  gap: var(--esp-2);
-}
-
-.etiqueta {
-  padding: 0 var(--esp-2);
-  border: 1px solid var(--c-vora);
-  border-radius: var(--radi-s);
-  color: var(--c-text-sec);
-  font: var(--t-mini);
-}
-
-.arxivada {
-  color: var(--c-avis);
-  border-color: var(--c-avis);
-}
-
-.avis {
-  padding: var(--esp-3) var(--esp-4);
-  border-left: 2px solid var(--c-avis);
-  background: var(--c-superficie);
-  color: var(--c-avis);
+.missatge {
+  margin: 0 0 var(--esp-4);
   font: var(--t-petit);
 }
 
-.properament {
-  color: var(--c-text-sec);
-  font: var(--t-petit);
+.error {
+  color: var(--c-error);
 }

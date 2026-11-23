@@ -44,6 +44,17 @@ export class CampaignContext {
     return this._campaign()?.id === id ? Promise.resolve(true) : this.load(id);
   }
 
+    /** Després d'un PATCH o d'un codi nou: actualitza la campanya sense tornar-la a demanar. */
+  patch(changes: Partial<CampaignDetail>): void {
+    this._campaign.update((campaign) => (campaign ? { ...campaign, ...changes } : campaign));
+  }
+
+  /** En sortir de la campanya: ja no en soc membre. */
+  clear(): void {
+    this.requestedId = null;
+    this._campaign.set(null);
+  }
+
   private async fetch(id: string): Promise<boolean> {
     try {
       const campaign = await this.campaignService.get(id);

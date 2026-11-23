@@ -103,4 +103,27 @@ describe('CampaignContext', () => {
     await expect(ensured).resolves.toBe(true);
     expect(context.campaign()?.id).toBe('c2');
   });
+  
+    it('applies local changes with patch(), so every page sees them', async () => {
+    const loaded = context.load('c1');
+    httpMock.expectOne(`${URL}/c1`).flush(detail('c1', { role: 'master', inviteCode: 'OLD11111' }));
+    await loaded;
+
+    context.patch({ inviteCode: 'NEW22222', maxPlayers: 3 });
+
+    expect(context.campaign()).toMatchObject({ id: 'c1', inviteCode: 'NEW22222', maxPlayers: 3 });
+  });
+
+  it('forgets the campaign with clear(), so ensure() asks the API again', async () => {
+    const loaded = context.load('c1');
+    httpMock.expectOne(`${URL}/c1`).flush(detail('c1'));
+    await loaded;
+
+    context.clear();
+    expect(context.campaign()).toBeNull();
+
+    const ensured = context.ensure('c1');
+    httpMock.expectOne(`${URL}/c1`).flush({ error: 'No ets membre' }, { status: 403, statusText: 'Forbidden' });
+    await expect(ensured).resolves.toBe(false);
+  });
 });

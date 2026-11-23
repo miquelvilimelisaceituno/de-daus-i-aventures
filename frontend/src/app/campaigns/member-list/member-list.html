@@ -1,0 +1,26 @@
+<ul class="membres">
+  @for (member of members(); track member.userId) {
+    <li class="membre">
+      @if (member.avatarUrl) {
+        <img class="avatar" [src]="member.avatarUrl" alt="" />
+      } @else {
+        <span class="avatar inicial" aria-hidden="true">{{ initial(member) }}</span>
+      }
+      <span class="nom">{{ member.name }}</span>
+      <span class="rol">{{ roleLabels[member.role] }}</span>
+      @if (expellable() && member.role === 'player') {
+        <button
+          appButton
+          variant="secundari"
+          type="button"
+          class="expulsa"
+          [disabled]="busy()"
+          [attr.aria-label]="'Expulsa ' + member.name"
+          (click)="expel.emit(member)"
+        >
+          Expulsa
+        </button>
+      }
+    </li>
+  }
+</ul>

@@ -24,6 +24,24 @@ export interface CampaignDetail extends Campaign {
   maxPlayers?: number;
 }
 
+/** Canvis de PATCH /api/campaigns/:cid (només el màster). Tot és opcional. */
+export interface CampaignChanges {
+  name?: string;
+  description?: string | null;
+  imageUrl?: string | null;
+  inviteOpen?: boolean;
+  maxPlayers?: number;
+}
+
+/** Un membre actiu de GET /api/campaigns/:cid/members (primer el màster, després per antiguitat). */
+export interface Member {
+  userId: string;
+  name: string;
+  avatarUrl: string | null;
+  role: CampaignRole;
+  joinedAt: string;
+}
+
 /** Cos de POST /api/campaigns. */
 export interface NewCampaign {
   name: string;

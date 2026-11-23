@@ -18,5 +18,25 @@
     }
 
     <p class="properament">Aquí hi haurà el diari: l’última sessió, la propera data i el grup.</p>
+
+    <section aria-labelledby="titol-grup">
+      <h2 id="titol-grup" class="titol-seccio">El grup</h2>
+      @if (members.error()) {
+        <p class="missatge error" role="alert">No s’han pogut carregar els membres.</p>
+        <button appButton variant="secundari" type="button" (click)="members.reload()">Torna-ho a provar</button>
+      } @else {
+        <app-member-list [members]="members.value()" />
+      }
+    </section>
+
+    @if (campaign.role === 'player') {
+      <hr />
+      @if (leaveError(); as message) {
+        <p class="missatge error" role="alert">{{ message }}</p>
+      }
+      <button appButton variant="secundari" type="button" [disabled]="leaving()" (click)="leave()">
+        {{ leaving() ? 'Sortint…' : 'Surt de la campanya' }}
+      </button>
+    }
   </main>
 }
