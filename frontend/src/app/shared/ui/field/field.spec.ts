@@ -2,8 +2,10 @@ import { Component, signal } from '@angular/core';
 import { TestBed } from '@angular/core/testing';
 import { FormControl, ReactiveFormsModule } from '@angular/forms';
 import { Field } from './field';
+import { UniqueIdService } from '../../unique-id.service';
 
 @Component({
+  selector: 'app-field-host',
   imports: [Field, ReactiveFormsModule],
   template: `<app-field label="Email" type="email" [formControl]="control" [error]="error()" />`,
 })
@@ -11,6 +13,16 @@ class Host {
   readonly control = new FormControl('', { nonNullable: true });
   readonly error = signal<string | null>(null);
 }
+
+@Component({
+  selector: 'app-two-fields-host',
+  imports: [Field],
+  template: `
+    <app-field label="Email" [error]="'Required'" />
+    <app-field label="Password" [error]="'Required'" />
+  `,
+})
+class TwoFieldsHost {}
 
 describe('Field', () => {
   async function render() {
@@ -81,5 +93,29 @@ describe('Field', () => {
     await fixture.whenStable();
 
     expect(input.disabled).toBe(true);
+  });
+
+    it('gives each field its own ids, so labels and errors never collide', async () => {
+    const fixture = TestBed.createComponent(TwoFieldsHost);
+    await fixture.whenStable();
+    const element = fixture.nativeElement as HTMLElement;
+    const [first, second] = Array.from(element.querySelectorAll('input'));
+    const [firstLabel, secondLabel] = Array.from(element.querySelectorAll('label'));
+
+    expect(first.id).not.toBe(second.id);
+    expect(firstLabel.htmlFor).toBe(first.id);
+    expect(secondLabel.htmlFor).toBe(second.id);
+    expect(first.getAttribute('aria-describedby')).not.toBe(second.getAttribute('aria-describedby'));
+  });
+
+  it('takes its id from UniqueIdService', async () => {
+    TestBed.configureTestingModule({
+      providers: [{ provide: UniqueIdService, useValue: { next: (prefix: string) => `${prefix}-test` } }],
+    });
+
+    const { input, label } = await render();
+
+    expect(input.id).toBe('camp-test');
+    expect(label.htmlFor).toBe('camp-test');
   });
 });
