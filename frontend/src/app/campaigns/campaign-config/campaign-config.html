@@ -1,0 +1,107 @@
+@if (context.campaign(); as campaign) {
+  <main class="pagina">
+    <h1 class="titol-pagina">Configuració</h1>
+
+    @if (context.isArchived()) {
+      <p class="avis" role="note">
+        Aquesta campanya està arxivada: no s’hi poden fer canvis ni hi pot entrar ningú.
+      </p>
+    }
+
+    <app-card class="seccio">
+      <section aria-labelledby="titol-codi">
+        <h2 id="titol-codi" class="titol-seccio">Codi d’invitació</h2>
+        <p class="ajuda">Envia’l al grup: amb aquest codi s’hi poden unir com a jugadors.</p>
+        <p class="codi">{{ campaign.inviteCode }}</p>
+
+        @if (codeError(); as message) {
+          <p class="missatge error" role="alert">{{ message }}</p>
+        }
+        @if (copied()) {
+          <p class="missatge exit" role="status">Codi copiat</p>
+        }
+
+        @if (!context.isArchived()) {
+          <div class="accions">
+            <button appButton type="button" (click)="copyCode(campaign.inviteCode ?? '')">Copia el codi</button>
+            <button
+              appButton
+              variant="secundari"
+              type="button"
+              [disabled]="regenerating()"
+              (click)="regenerateCode()"
+            >
+              {{ regenerating() ? 'Generant…' : 'Genera’n un de nou' }}
+            </button>
+          </div>
+        }
+      </section>
+    </app-card>
+
+    <app-card class="seccio">
+      <form [formGroup]="form" (ngSubmit)="save()" novalidate aria-labelledby="titol-invitacions">
+        <h2 id="titol-invitacions" class="titol-seccio">Invitacions</h2>
+
+        <label class="opcio">
+          <input type="checkbox" formControlName="inviteOpen" />
+          Invitacions obertes
+        </label>
+
+        <label class="camp">
+          <span class="etiqueta-camp">Màxim de jugadors</span>
+          <input
+            class="entrada"
+            type="number"
+            min="1"
+            max="12"
+            formControlName="maxPlayers"
+            [attr.aria-invalid]="maxPlayersError() ? true : null"
+          />
+        </label>
+        @if (maxPlayersError(); as message) {
+          <p class="missatge error">{{ message }}</p>
+        }
+
+        <p class="ajuda">Ara hi ha {{ playerCount() }} jugadors (el màster no compta).</p>
+        @if (overLimit()) {
+          <p class="missatge avis-text" role="status">
+            Hi ha més jugadors que el màxim: no s’expulsa ningú, però no hi podrà entrar ningú més.
+          </p>
+        }
+
+        @if (saveError(); as message) {
+          <p class="missatge error" role="alert">{{ message }}</p>
+        }
+        @if (saved()) {
+          <p class="missatge exit" role="status">Canvis desats</p>
+        }
+
+        @if (!context.isArchived()) {
+          <button appButton type="submit" [disabled]="saving()">
+            {{ saving() ? 'Desant…' : 'Desa els canvis' }}
+          </button>
+        }
+      </form>
+    </app-card>
+
+    <app-card class="seccio">
+      <section aria-labelledby="titol-membres">
+        <h2 id="titol-membres" class="titol-seccio">Membres</h2>
+        @if (membersError(); as message) {
+          <p class="missatge error" role="alert">{{ message }}</p>
+        }
+        @if (members.error()) {
+          <p class="missatge error" role="alert">No s’han pogut carregar els membres.</p>
+          <button appButton variant="secundari" type="button" (click)="members.reload()">Torna-ho a provar</button>
+        } @else {
+          <app-member-list
+            [members]="members.value()"
+            [expellable]="!context.isArchived()"
+            [busy]="expelling()"
+            (expel)="expel($event)"
+          />
+        }
+      </section>
+    </app-card>
+  </main>
+}

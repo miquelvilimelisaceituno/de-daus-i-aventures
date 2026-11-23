@@ -1,7 +1,8 @@
 generator client {
-  provider     = "prisma-client"
-  output       = "../src/generated/prisma"
-  moduleFormat = "cjs"
+  provider        = "prisma-client"
+  output          = "../src/generated/prisma"
+  moduleFormat    = "cjs"
+  previewFeatures = ["partialIndexes"]
 }
 
 datasource db {
@@ -21,6 +22,8 @@ model Campaign {
   createdAt   DateTime  @default(now()) @map("created_at") @db.Timestamptz
   updatedAt   DateTime  @updatedAt @map("updated_at") @db.Timestamptz
 
+  memberships Membership[]
+
   @@map("campaigns")
 }
 
@@ -32,5 +35,38 @@ model User {
   createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz
   updatedAt DateTime @updatedAt @map("updated_at") @db.Timestamptz
 
+  memberships Membership[]
+
   @@map("users")
+}
+
+enum MembershipRole {
+  master
+  player
+
+  @@map("membership_role")
+}
+
+// Pertinença usuari–campanya (D2). Mai s'esborra: sortir o ser expulsat posa left_at (D31).
+model Membership {
+  userId     String         @map("user_id") @db.VarChar(128)
+  campaignId String         @map("campaign_id") @db.Uuid
+  role       MembershipRole
+  joinedAt   DateTime       @default(now()) @map("joined_at") @db.Timestamptz
+  leftAt     DateTime?      @map("left_at") @db.Timestamptz // NULL = membre actiu
+  createdAt  DateTime       @default(now()) @map("created_at") @db.Timestamptz
+  updatedAt  DateTime       @updatedAt @map("updated_at") @db.Timestamptz
+
+  // L'usuari no es pot esborrar si té pertinences (CRUD §6); la campanya sí, en cascada.
+  user     User     @relation(fields: [userId], references: [id], onDelete: NoAction)
+  campaign Campaign @relation(fields: [campaignId], references: [id], onDelete: Cascade)
+
+  // La PK (user_id, campaign_id) és el destí de les FK compostes de characters i votes (D30).
+  @@id([userId, campaignId])
+  // Un sol màster per campanya, encara que hagi marxat (el màster no pot sortir).
+  // Compte: el client creu que campaignId és únic. No facis findUnique({ where: { campaignId } }).
+  @@unique([campaignId], map: "memberships_one_master_per_campaign", where: { role: "master" })
+  // Membres d'una campanya (la PK comença per user_id i no serveix per a aquesta cerca).
+  @@index([campaignId])
+  @@map("memberships")
 }

@@ -1,21 +1,92 @@
-<main>
-    <h1 class="titol-pagina">Les meves campanyes</h1>
+<main class="pagina">
+  <h1 class="titol-pagina">Les meves campanyes</h1>
 
-    @if(campaigns.isLoading()){
-        <p>Carregant...</p>
-    } @else if (campaigns.error()) {
-        <p role="alert">No s'han pogut carregar les campanyes.</p>
-    } @else {
-        @for (campaign of campaigns.value(); track campaign.id){
-            <article>
-                <h2>{{ campaign.name}} </h2>
-                @if (campaign.description) {
-                    <p>{{ campaign.description}}</p>
-                }
-            </article>
-        } @empty {
-            <p>Encara no hi ha cap campanya.</p>
-        }
+  <div class="accions">
+    <button
+      appButton
+      variant="secundari"
+      type="button"
+      [attr.aria-expanded]="panel() === 'create'"
+      (click)="open('create')"
+    >
+      Crea una campanya
+    </button>
+    <button
+      appButton
+      variant="secundari"
+      type="button"
+      [attr.aria-expanded]="panel() === 'join'"
+      (click)="open('join')"
+    >
+      Uneix-te amb un codi
+    </button>
+  </div>
+
+  @switch (panel()) {
+    @case ('create') {
+      <app-card class="formulari">
+        <form [formGroup]="createForm" (ngSubmit)="submitCreate()" novalidate>
+          <h2 class="titol-formulari">Nova campanya</h2>
+          <app-field label="Nom de la campanya" formControlName="name" [error]="nameError()" />
+          @if (formError(); as message) {
+            <p class="missatge error" role="alert">{{ message }}</p>
+          }
+          <button appButton type="submit" [disabled]="pending()">
+            {{ pending() ? 'Creant…' : 'Crea-la' }}
+          </button>
+        </form>
+      </app-card>
     }
+    @case ('join') {
+      <app-card class="formulari">
+        <form [formGroup]="joinForm" (ngSubmit)="submitJoin()" novalidate>
+          <h2 class="titol-formulari">Uneix-te a una campanya</h2>
+          <app-field label="Codi d’invitació" formControlName="code" [error]="codeError()" />
+          @if (formError(); as message) {
+            <p class="missatge error" role="alert">{{ message }}</p>
+          }
+          <button appButton type="submit" [disabled]="pending()">
+            {{ pending() ? 'Entrant…' : 'Uneix-me' }}
+          </button>
+        </form>
+      </app-card>
+    }
+  }
 
+  @if (campaigns.isLoading()) {
+    <p>Carregant…</p>
+  } @else if (campaigns.error()) {
+    <p class="missatge error" role="alert">No s’han pogut carregar les campanyes.</p>
+    <button appButton type="button" (click)="campaigns.reload()">Torna-ho a provar</button>
+  } @else {
+    <ul class="llista">
+      @for (campaign of campaigns.value(); track campaign.id) {
+        <li>
+          <app-card class="targeta">
+            <article>
+              <h2 class="nom">
+                <a class="enllac" [routerLink]="['/c', campaign.id]">{{ campaign.name }}</a>
+              </h2>
+              <p class="etiquetes">
+                <span class="etiqueta">{{ roleLabels[campaign.role] }}</span>
+                @if (campaign.archivedAt) {
+                  <span class="etiqueta arxivada">Arxivada</span>
+                }
+              </p>
+              @if (campaign.description) {
+                <p class="descripcio">{{ campaign.description }}</p>
+              }
+              @if (campaign.inviteCode) {
+                <p class="codi">Codi d’invitació: <strong>{{ campaign.inviteCode }}</strong></p>
+              }
+            </article>
+          </app-card>
+        </li>
+      } @empty {
+        <li class="buit">
+          Encara no formes part de cap campanya. Crea’n una o uneix-te amb el codi que t’hagi donat el màster.
+        </li>
+      }
+    </ul>
+  }
 </main>

@@ -1,0 +1,107 @@
+@use 'breakpoints' as *;
+
+.pagina {
+  max-width: 720px;
+  margin: 0 auto;
+  padding: var(--esp-8) var(--marge-lateral);
+
+  @include des-de($bp-tauleta) {
+    padding-top: var(--esp-12);
+  }
+}
+
+.seccio {
+  margin-bottom: var(--esp-6);
+}
+
+.titol-seccio {
+  font: var(--t-h3);
+}
+
+.ajuda {
+  color: var(--c-text-sec);
+  font: var(--t-petit);
+}
+
+.codi {
+  font: var(--t-h2);
+  letter-spacing: 0.15em;
+  user-select: all; // un clic selecciona tot el codi, per si el porta-retalls falla
+}
+
+.accions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--esp-3);
+}
+
+.opcio {
+  display: flex;
+  align-items: center;
+  gap: var(--esp-2);
+  min-height: var(--tactil-min);
+  margin-bottom: var(--esp-4);
+  font: var(--t-interficie);
+
+  input {
+    width: 20px;
+    height: 20px;
+    accent-color: var(--c-primari);
+  }
+}
+
+// Mateix aspecte que el component Field (Guia d'estil: input).
+.camp {
+  display: grid;
+  gap: var(--esp-1);
+  max-width: 160px;
+  margin-bottom: var(--esp-2);
+}
+
+.etiqueta-camp {
+  font: var(--t-interficie);
+}
+
+.entrada {
+  min-height: var(--tactil-min);
+  padding: 0 var(--esp-3);
+  background: var(--c-superficie);
+  border: 1px solid var(--c-vora-camp);
+  border-radius: var(--radi-s);
+  color: var(--c-text);
+  font: var(--t-cos);
+
+  &:disabled {
+    background: var(--c-fons);
+    color: var(--c-text-sec);
+  }
+
+  &[aria-invalid='true'] {
+    border: 2px solid var(--c-error);
+  }
+}
+
+.avis {
+  padding: var(--esp-3) var(--esp-4);
+  border-left: 2px solid var(--c-avis);
+  background: var(--c-superficie);
+  color: var(--c-avis);
+  font: var(--t-petit);
+}
+
+.missatge {
+  margin: 0 0 var(--esp-4);
+  font: var(--t-petit);
+}
+
+.error {
+  color: var(--c-error);
+}
+
+.exit {
+  color: var(--c-exit);
+}
+
+.avis-text {
+  color: var(--c-avis);
+}
