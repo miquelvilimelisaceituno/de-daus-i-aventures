@@ -43,7 +43,11 @@ export const routes: Routes = [
       { path: 'compendi', loadComponent: comingSoon, data: { title: 'Compendi' } },
       { path: 'calendari', loadComponent: comingSoon, data: { title: 'Calendari' } },
       { path: 'mapa', loadComponent: comingSoon, data: { title: 'Mapa' } },
-      { path: 'config', loadComponent: comingSoon, data: { title: 'Configuració' }, canActivate: [masterGuard] },
+      {
+        path: 'config',
+        loadComponent: () => import('./campaigns/campaign-config/campaign-config').then((m) => m.CampaignConfig),
+        canActivate: [masterGuard],
+      },
     ],
   },
 ];
