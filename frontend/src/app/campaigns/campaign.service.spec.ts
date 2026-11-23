@@ -78,4 +78,14 @@ describe('CampaignService', () => {
     await expect(second).resolves.toMatchObject({ id: 'c2' });
     await expect(first).rejects.toBeInstanceOf(HttpErrorResponse);
   });
+
+    it('gets the detail of one campaign with GET /api/campaigns/:id', async () => {
+    const detail = service.get('c1');
+
+    const req = httpMock.expectOne(`${URL}/c1`);
+    expect(req.request.method).toBe('GET');
+    req.flush({ ...CAMPAIGN, inviteOpen: true, maxPlayers: 6 });
+
+    await expect(detail).resolves.toMatchObject({ id: 'c1', inviteOpen: true, maxPlayers: 6 });
+  });
 });

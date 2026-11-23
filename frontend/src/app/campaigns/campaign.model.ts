@@ -15,6 +15,12 @@ export interface Campaign {
   inviteCode?: string;
 }
 
+/** Detall de GET /api/campaigns/:cid. La configuració de les invitacions només arriba al màster. */
+export interface CampaignDetail extends Campaign {
+  inviteOpen?: boolean;
+  maxPlayers?: number;
+}
+
 /** Cos de POST /api/campaigns. */
 export interface NewCampaign {
   name: string;

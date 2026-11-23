@@ -2,7 +2,7 @@ import { HttpClient, httpResource } from '@angular/common/http';
 import { Service, inject } from '@angular/core';
 import { firstValueFrom } from 'rxjs';
 import { environment } from '../../environments/environment';
-import { Campaign, NewCampaign } from './campaign.model';
+import { Campaign, NewCampaign, CampaignDetail } from './campaign.model';
 
 @Service()
 export class CampaignService {
@@ -14,6 +14,11 @@ export class CampaignService {
     return httpResource<Campaign[]>(() => this.url, { defaultValue: [] });
   }
 
+    /** Detall d'una campanya on soc membre actiu. Si no ho soc (o no existeix) → error 403. */
+  get(id: string): Promise<CampaignDetail> {
+    return firstValueFrom(this.http.get<CampaignDetail>(`${this.url}/${id}`));
+  }
+  
   /** Crea una campanya; en soc el màster (HU-10). */
   create(campaign: NewCampaign): Promise<Campaign> {
     return firstValueFrom(this.http.post<Campaign>(this.url, campaign));
