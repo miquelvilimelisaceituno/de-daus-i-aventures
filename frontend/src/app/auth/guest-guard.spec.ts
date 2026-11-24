@@ -39,7 +39,7 @@ describe('guestGuard', () => {
     gateway = new FakeAuthGateway();
   });
 
-  it('sense sessió, mostra el login', async () => {
+  it('without a session, shows the login', async () => {
     const harness = await setup();
 
     await harness.navigateByUrl('/login');
@@ -47,7 +47,7 @@ describe('guestGuard', () => {
     expect(TestBed.inject(Router).url).toBe('/login');
   });
 
-  it('amb sessió, envia a /campanyes', async () => {
+  it('with a session, sends the user to /campanyes', async () => {
     gateway.user = { uid: 'uid-1', email: 'miquel@example.com' };
     const harness = await setup();
     const navigation = harness.navigateByUrl('/login');

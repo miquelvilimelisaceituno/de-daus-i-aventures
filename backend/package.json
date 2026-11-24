@@ -15,7 +15,8 @@
     "db:seed": "prisma db seed",
     "test:db": "cross-env NODE_ENV=test prisma migrate deploy",
     "pretest": "npm run test:db",
-    "test": "jest --runInBand"
+    "test": "jest --runInBand",
+    "test:coverage": "npm test -- --coverage"
   },
   "type": "commonjs",
   "dependencies": {

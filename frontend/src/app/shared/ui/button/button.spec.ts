@@ -27,14 +27,14 @@ describe('Button', () => {
     return { fixture, button };
   }
 
-  it('és un <button> natiu amb el text projectat', async () => {
+  it('is a native <button> with the projected text', async () => {
     const { button } = await render();
 
     expect(button.textContent?.trim()).toBe('Entrar');
     expect(button.type).toBe('submit');
   });
 
-  it('respecta l’atribut disabled natiu', async () => {
+  it('respects the native disabled attribute', async () => {
     const { fixture, button } = await render();
 
     fixture.componentInstance.disabled.set(true);
@@ -43,7 +43,7 @@ describe('Button', () => {
     expect(button.disabled).toBe(true);
   });
 
-  it('el component s’aplica sobre el <button>', async () => {
+  it('the component is applied to the <button>', async () => {
     const { fixture } = await render();
 
     const applied = fixture.debugElement.query(By.directive(Button));
@@ -51,7 +51,7 @@ describe('Button', () => {
     expect(applied?.nativeElement.tagName).toBe('BUTTON');
   });
 
-  it('per defecte és primari; amb variant="secundari" porta la classe secundari', async () => {
+  it('is primary by default; with variant="secundari" it has the secundari class', async () => {
     const { button } = await render();
     expect(button.classList.contains('secundari')).toBe(false);
 

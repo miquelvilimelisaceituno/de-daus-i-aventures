@@ -54,7 +54,7 @@ describe('RegisterPage', () => {
     httpMock.verify();
   });
 
-  it('registre correcte: crea el compte, envia el nom a l’API i va a /campanyes', async () => {
+  it('successful sign-up: creates the account, sends the name to the API and goes to /campanyes', async () => {
     const { fixture, page, name, email, password } = await render();
     type(name, '  Miquel  ');
     type(email, 'miquel@example.com');
@@ -70,7 +70,7 @@ describe('RegisterPage', () => {
     expect(navigate).toHaveBeenCalledWith('/campanyes');
   });
 
-  it('el nom és obligatori, també si només té espais', async () => {
+  it('the name is required, also when it only has spaces', async () => {
     const { fixture, page, name, email, password } = await render();
     type(name, '   ');
     type(email, 'miquel@example.com');
@@ -82,7 +82,7 @@ describe('RegisterPage', () => {
     expect(gateway.calls).toEqual([]);
   });
 
-  it('el nom no pot passar de 40 caràcters', async () => {
+  it('the name cannot exceed 40 characters', async () => {
     const { fixture, page, name, email, password } = await render();
     type(name, 'a'.repeat(41));
     type(email, 'miquel@example.com');
@@ -94,7 +94,7 @@ describe('RegisterPage', () => {
     expect(gateway.calls).toEqual([]);
   });
 
-  it('la contrasenya ha de tenir almenys 6 caràcters', async () => {
+  it('the password must have at least 6 characters', async () => {
     const { fixture, page, name, email, password } = await render();
     type(name, 'Miquel');
     type(email, 'miquel@example.com');
@@ -106,7 +106,7 @@ describe('RegisterPage', () => {
     expect(gateway.calls).toEqual([]);
   });
 
-  it('email ja registrat: mostra l’error i no surt del formulari', async () => {
+  it('email already registered: shows the error and stays on the form', async () => {
     const { fixture, page, name, email, password } = await render();
     gateway.failWith = { code: 'auth/email-already-in-use' };
     type(name, 'Miquel');

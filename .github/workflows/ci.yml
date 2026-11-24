@@ -34,7 +34,20 @@ jobs:
           cache-dependency-path: backend/package-lock.json
       - run: npm ci
       - run: npm run typecheck
-      - run: npm test
+      # Tests amb cobertura: si baixa dels mínims de jest.config.js, la CI falla.
+      - run: npm run test:coverage
+      # El resum surt a la pàgina de l'execució (Summary), també si els tests han fallat.
+      - name: Resum de cobertura
+        if: ${{ !cancelled() }}
+        run: node ../.github/scripts/coverage-summary.mjs "Backend (Jest)" coverage/coverage-summary.json
+      - name: Informe HTML de cobertura
+        if: ${{ !cancelled() }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: cobertura-backend
+          path: backend/coverage/
+          if-no-files-found: ignore
+          retention-days: 14
 
   frontend:
     name: Frontend (tests i build)
@@ -50,5 +63,17 @@ jobs:
           cache: npm
           cache-dependency-path: frontend/package-lock.json
       - run: npm ci
-      - run: npx ng test --watch=false
+      # Tests amb cobertura: si baixa dels mínims d'angular.json, la CI falla.
+      - run: npm run test:coverage
+      - name: Resum de cobertura
+        if: ${{ !cancelled() }}
+        run: node ../.github/scripts/coverage-summary.mjs "Frontend (Vitest)" coverage/frontend/coverage-summary.json
+      - name: Informe HTML de cobertura
+        if: ${{ !cancelled() }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: cobertura-frontend
+          path: frontend/coverage/
+          if-no-files-found: ignore
+          retention-days: 14
       - run: npm run build

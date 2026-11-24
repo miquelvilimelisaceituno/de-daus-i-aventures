@@ -30,7 +30,7 @@ describe('Header', () => {
     gateway = new FakeAuthGateway();
   });
 
-  it('sense sessió, només mostra el logo', async () => {
+  it('without a session, only shows the logo', async () => {
     const fixture = await render();
     await fixture.whenStable();
 
@@ -39,7 +39,7 @@ describe('Header', () => {
     expect(element.querySelector('.perfil')).toBeNull();
   });
 
-  it('amb sessió, mostra el nom amb l’enllaç al perfil', async () => {
+  it('with a session, shows the name with the link to the profile', async () => {
     gateway.user = { uid: 'uid-1', email: 'miquel@example.com' };
     const fixture = await render();
     TestBed.inject(HttpTestingController)
