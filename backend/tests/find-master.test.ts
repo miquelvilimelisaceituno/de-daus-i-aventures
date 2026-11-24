@@ -1,5 +1,5 @@
 import { afterAll, beforeEach, expect, it } from '@jest/globals';
-import { findMaster } from '../src/campaigns/find-master';
+import { findMaster } from '../src/repositories/memberships.repository';
 import { prisma } from '../src/db/prisma';
 import { resetDb } from './helpers/db';
 

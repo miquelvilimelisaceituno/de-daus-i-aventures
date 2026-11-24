@@ -4,7 +4,7 @@ import { z } from 'zod';
 import { env } from './config/env';
 import { HttpError } from './http/http-error';
 import { sendValidationError } from './http/validation';
-import { campaignsRouter } from './routes/campaigns';
+import { campaignsRouter } from './routes/campaigns.routes';
 import { meRouter } from './routes/me.routes';
 
 export function createApp() {

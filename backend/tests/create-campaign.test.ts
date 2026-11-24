@@ -1,5 +1,6 @@
 import { afterAll, beforeEach, describe, expect, it } from '@jest/globals';
-import { createCampaign, ProfileNotFoundError } from '../src/campaigns/create-campaign';
+import { createCampaign } from '../src/services/campaigns.service';
+import { ProfileNotFoundError } from '../src/services/errors';
 import { prisma } from '../src/db/prisma';
 import { resetDb } from './helpers/db';
 
