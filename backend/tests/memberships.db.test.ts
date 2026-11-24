@@ -26,7 +26,7 @@ afterAll(async () => {
 });
 
 describe('memberships', () => {
-  it('desa un màster i un jugador, actius per defecte', async () => {
+  it('stores a master and a player, active by default', async () => {
     await prisma.membership.createMany({
       data: [
         { userId: 'miquel', campaignId, role: 'master' },
@@ -38,7 +38,7 @@ describe('memberships', () => {
     expect(members).toHaveLength(2);
   });
 
-  it('no permet un segon màster a la mateixa campanya', async () => {
+  it('rejects a second master in the same campaign', async () => {
     await prisma.membership.create({ data: { userId: 'miquel', campaignId, role: 'master' } });
 
     await expect(
@@ -46,7 +46,7 @@ describe('memberships', () => {
     ).rejects.toMatchObject({ code: 'P2002' });
   });
 
-  it('un usuari pot ser màster de dues campanyes diferents', async () => {
+  it('a user can be the master of two different campaigns', async () => {
     const other = await prisma.campaign.create({ data: { name: 'Una altra', inviteCode: 'ALTRA001' } });
 
     await prisma.membership.createMany({
@@ -59,7 +59,7 @@ describe('memberships', () => {
     expect(await prisma.membership.count({ where: { userId: 'miquel' } })).toBe(2);
   });
 
-  it('no permet dues pertinences del mateix usuari a la mateixa campanya', async () => {
+  it('rejects two memberships of the same user in the same campaign', async () => {
     await prisma.membership.create({ data: { userId: 'laia', campaignId, role: 'player' } });
 
     await expect(
@@ -67,7 +67,7 @@ describe('memberships', () => {
     ).rejects.toMatchObject({ code: 'P2002' });
   });
 
-  it('eliminar la campanya elimina les seves pertinences en cascada', async () => {
+  it('deleting the campaign deletes its memberships in cascade', async () => {
     await prisma.membership.create({ data: { userId: 'laia', campaignId, role: 'player' } });
 
     await prisma.campaign.delete({ where: { id: campaignId } });
@@ -75,7 +75,7 @@ describe('memberships', () => {
     expect(await prisma.membership.count()).toBe(0);
   });
 
-  it('no es pot eliminar un usuari que té pertinences', async () => {
+  it('a user with memberships cannot be deleted', async () => {
     await prisma.membership.create({ data: { userId: 'laia', campaignId, role: 'player' } });
 
     await expect(prisma.user.delete({ where: { id: 'laia' } })).rejects.toMatchObject({

@@ -40,7 +40,7 @@ let gateway: FakeAuthGateway;
     return req.request;
   }
 
-  it('afegeix el token Bearer a les peticions a l’API', async () => {
+  it('adds the Bearer token to API requests', async () => {
     gateway.token = 'token-1';
 
     const request = await send(`${environment.apiUrl}/campaigns`);
@@ -48,13 +48,13 @@ let gateway: FakeAuthGateway;
     expect(request.headers.get('Authorization')).toBe('Bearer token-1');
   });
 
-  it('sense sessió, envia la petició sense capçalera', async () => {
+  it('without a session, sends the request without the header', async () => {
     const request = await send(`${environment.apiUrl}/campaigns`);
 
     expect(request.headers.has('Authorization')).toBe(false);
   });
 
-  it('no envia el token a altres dominis', async () => {
+  it('does not send the token to other domains', async () => {
     gateway.token = 'token-1';
 
     const request = await send('https://example.com/api/campaigns');
@@ -62,7 +62,7 @@ let gateway: FakeAuthGateway;
     expect(request.headers.has('Authorization')).toBe(false);
   });
 
-  it('no l’envia a una URL que només comença igual que l’API', async () => {
+  it('does not send it to a URL that only starts like the API', async () => {
     gateway.token = 'token-1';
 
     const request = await send(`${environment.apiUrl}-falsa/campaigns`);

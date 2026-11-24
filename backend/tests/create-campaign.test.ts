@@ -19,7 +19,7 @@ function codes(...values: string[]) {
 }
 
 describe('createCampaign', () => {
-  it('si el codi generat ja existeix, en prova un altre', async () => {
+  it('if the generated code already exists, tries another one', async () => {
     await prisma.campaign.create({ data: { name: 'Existent', inviteCode: 'DRAC2024' } });
 
     const campaign = await createCampaign('miquel', { name: 'El final infinit' }, codes('DRAC2024', 'NOU23456'));
@@ -28,7 +28,7 @@ describe('createCampaign', () => {
     expect(await prisma.campaign.count()).toBe(2);
   });
 
-  it('després de 5 codis repetits, falla sense crear res', async () => {
+  it('after 5 repeated codes, fails without creating anything', async () => {
     await prisma.campaign.create({ data: { name: 'Existent', inviteCode: 'DRAC2024' } });
 
     await expect(createCampaign('miquel', { name: 'El final infinit' }, () => 'DRAC2024')).rejects.toThrow(
@@ -37,7 +37,7 @@ describe('createCampaign', () => {
     expect(await prisma.campaign.count()).toBe(1);
   });
 
-  it('sense perfil → ProfileNotFoundError i cap campanya a mitges', async () => {
+  it('no profile → ProfileNotFoundError and no half-created campaign', async () => {
     await expect(createCampaign('laia', { name: 'Sense perfil' })).rejects.toBeInstanceOf(ProfileNotFoundError);
     expect(await prisma.campaign.count()).toBe(0);
   });

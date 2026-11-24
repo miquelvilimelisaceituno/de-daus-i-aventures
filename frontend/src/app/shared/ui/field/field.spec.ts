@@ -38,7 +38,7 @@ describe('Field', () => {
     };
   }
 
-  it('enllaça l’etiqueta amb l’input', async () => {
+  it('links the label to the input', async () => {
     const { input, label } = await render();
 
     expect(label.textContent?.trim()).toBe('Email');
@@ -46,7 +46,7 @@ describe('Field', () => {
     expect(input.type).toBe('email');
   });
 
-  it('mostra el valor del formulari i li envia el que s’escriu', async () => {
+  it('shows the form value and sends it what is typed', async () => {
     const { fixture, host, input } = await render();
 
     host.control.setValue('miquel@example.com');
@@ -58,7 +58,7 @@ describe('Field', () => {
     expect(host.control.value).toBe('laia@example.com');
   });
 
-  it('marca el control com a tocat en sortir del camp', async () => {
+  it('marks the control as touched on blur', async () => {
     const { host, input } = await render();
 
     input.dispatchEvent(new Event('blur'));
@@ -66,7 +66,7 @@ describe('Field', () => {
     expect(host.control.touched).toBe(true);
   });
 
-  it('sense error, no mostra missatge ni marca l’input com a invàlid', async () => {
+  it('without an error, shows no message and does not mark the input as invalid', async () => {
     const { element, input } = await render();
 
     expect(element.querySelector('.error')).toBeNull();
@@ -74,7 +74,7 @@ describe('Field', () => {
     expect(input.hasAttribute('aria-describedby')).toBe(false);
   });
 
-  it('amb error, el mostra i l’associa a l’input per als lectors de pantalla', async () => {
+  it('with an error, shows it and links it to the input for screen readers', async () => {
     const { fixture, host, element, input } = await render();
 
     host.error.set('L’email és obligatori');
@@ -86,7 +86,7 @@ describe('Field', () => {
     expect(input.getAttribute('aria-describedby')).toBe(message.id);
   });
 
-  it('es desactiva quan es desactiva el control', async () => {
+  it('is disabled when the control is disabled', async () => {
     const { fixture, host, input } = await render();
 
     host.control.disable();

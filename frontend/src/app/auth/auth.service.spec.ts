@@ -37,7 +37,7 @@ describe('AuthService', () => {
     httpMock.verify();
   });
 
-  it('comença en loading i passa a signedOut si no hi ha sessió', async () => {
+  it('starts as loading and becomes signedOut if there is no session', async () => {
     const auth = createService();
     expect(auth.status()).toBe('loading');
 
@@ -47,7 +47,7 @@ describe('AuthService', () => {
     expect(auth.profile()).toBeNull();
   });
 
-  it('amb una sessió desada, crida POST /api/me i desa el perfil', async () => {
+  it('with a saved session, calls POST /api/me and stores the profile', async () => {
     gateway.user = { uid: 'uid-1', email: 'miquel@example.com' };
     const auth = createService();
     await settle();
@@ -63,7 +63,7 @@ describe('AuthService', () => {
     expect(auth.profile()).toEqual(PROFILE);
   });
 
-  it('login: inicia sessió a Firebase i espera el perfil abans de resoldre', async () => {
+  it('login: signs in to Firebase and waits for the profile before resolving', async () => {
     const auth = createService();
     await auth.whenSettled();
 
@@ -80,7 +80,7 @@ describe('AuthService', () => {
     expect(auth.profile()?.name).toBe('Miquel');
   });
 
-  it('login: si Firebase el rebutja, llança l’error i torna a signedOut', async () => {
+  it('login: if Firebase rejects it, throws the error and goes back to signedOut', async () => {
     const auth = createService();
     await auth.whenSettled();
     gateway.failWith = { code: 'auth/invalid-credential' };
@@ -93,7 +93,7 @@ describe('AuthService', () => {
     httpMock.expectNone(ME);
   });
 
-  it('register: envia el nom triat a POST /api/me', async () => {
+  it('register: sends the chosen name to POST /api/me', async () => {
     const auth = createService();
     await auth.whenSettled();
 
@@ -108,7 +108,7 @@ describe('AuthService', () => {
     expect(auth.profile()).toEqual(PROFILE);
   });
 
-  it('register: si falla, no reaprofita el nom en el login següent', async () => {
+  it('register: if it fails, does not reuse the name on the next login', async () => {
     const auth = createService();
     await auth.whenSettled();
     gateway.failWith = { code: 'auth/email-already-in-use' };
@@ -124,7 +124,7 @@ describe('AuthService', () => {
     await login;
   });
 
-  it('si l’API falla, hi ha sessió però marca profileError', async () => {
+  it('if the API fails, there is a session but profileError is set', async () => {
     gateway.user = { uid: 'uid-1', email: 'miquel@example.com' };
     const auth = createService();
     await settle();
@@ -143,7 +143,7 @@ describe('AuthService', () => {
     expect(auth.profile()).toEqual(PROFILE);
   });
 
-  it('logout: tanca la sessió i esborra el perfil', async () => {
+  it('logout: signs out and clears the profile', async () => {
     gateway.user = { uid: 'uid-1', email: 'miquel@example.com' };
     const auth = createService();
     await settle();
@@ -157,7 +157,7 @@ describe('AuthService', () => {
     expect(auth.profile()).toBeNull();
   });
 
-  it('descarta la resposta del perfil si mentrestant l’usuari ha tancat la sessió', async () => {
+  it('discards the profile response if the user has signed out in the meantime', async () => {
     gateway.user = { uid: 'uid-1', email: 'miquel@example.com' };
     const auth = createService();
     await settle();
@@ -171,7 +171,7 @@ describe('AuthService', () => {
     expect(auth.profile()).toBeNull();
   });
 
-    it('updateProfile: envia els canvis amb PATCH i actualitza el perfil', async () => {
+    it('updateProfile: sends the changes with PATCH and updates the profile', async () => {
     gateway.user = { uid: 'uid-1', email: 'miquel@example.com' };
     const auth = createService();
     await settle();
@@ -188,7 +188,7 @@ describe('AuthService', () => {
     expect(auth.profile()?.name).toBe('Miquel el Savi');
   });
 
-  it('updateProfile: si l’API falla, llança l’error i no toca el perfil', async () => {
+  it('updateProfile: if the API fails, throws the error and leaves the profile untouched', async () => {
     gateway.user = { uid: 'uid-1', email: 'miquel@example.com' };
     const auth = createService();
     await settle();

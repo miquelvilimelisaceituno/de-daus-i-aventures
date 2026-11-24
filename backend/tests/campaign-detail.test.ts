@@ -41,12 +41,12 @@ afterAll(async () => {
 });
 
 describe('GET /api/campaigns/:cid (loadMembership)', () => {
-  it('sense token → 401', async () => {
+  it('no token → 401', async () => {
     const res = await request(app).get(url());
     expect(res.status).toBe(401);
   });
 
-  it('el màster veu el detall amb el codi i la configuració de les invitacions', async () => {
+  it('the master sees the detail with the code and the invitation settings', async () => {
     const res = await request(app).get(url()).set(as('miquel'));
 
     expect(res.status).toBe(200);
@@ -60,7 +60,7 @@ describe('GET /api/campaigns/:cid (loadMembership)', () => {
     });
   });
 
-  it('el jugador veu el detall sense el codi ni la configuració', async () => {
+  it('the player sees the detail without the code or the settings', async () => {
     const res = await request(app).get(url()).set(as('laia'));
 
     expect(res.status).toBe(200);
@@ -70,12 +70,12 @@ describe('GET /api/campaigns/:cid (loadMembership)', () => {
     expect(res.body).not.toHaveProperty('maxPlayers');
   });
 
-  it('qui no és membre → 403', async () => {
+  it('a non-member → 403', async () => {
     const res = await request(app).get(url()).set(as('pau'));
     expect(res.status).toBe(403);
   });
 
-  it('qui ha sortit de la campanya → 403', async () => {
+  it('someone who has left the campaign → 403', async () => {
     await prisma.membership.update({
       where: { userId_campaignId: { userId: 'laia', campaignId: cid } },
       data: { leftAt: new Date() },
@@ -85,21 +85,21 @@ describe('GET /api/campaigns/:cid (loadMembership)', () => {
     expect(res.status).toBe(403);
   });
 
-  it('una campanya que no existeix → 403, igual que si no en fossis membre', async () => {
+  it('a campaign that does not exist → 403, the same as if you were not a member', async () => {
     const res = await request(app)
       .get('/api/campaigns/0193a2b4-0000-7000-8000-000000000000')
       .set(as('miquel'));
     expect(res.status).toBe(403);
   });
 
-  it('un id que no és un UUID → 403, no 500', async () => {
+  it('an id that is not a UUID → 403, not 500', async () => {
     const res = await request(app).get('/api/campaigns/no-es-un-uuid').set(as('miquel'));
     expect(res.status).toBe(403);
   });
 });
 
 describe('PATCH /api/campaigns/:cid', () => {
-  it('el màster tanca les invitacions i limita els jugadors (HU-16)', async () => {
+  it('the master closes invitations and limits the players (HU-16)', async () => {
     const res = await request(app).patch(url()).set(as('miquel')).send({ inviteOpen: false, maxPlayers: 4 });
 
     expect(res.status).toBe(200);
@@ -108,14 +108,14 @@ describe('PATCH /api/campaigns/:cid', () => {
     expect(campaign).toMatchObject({ inviteOpen: false, maxPlayers: 4 });
   });
 
-  it('el màster canvia el nom', async () => {
+  it('the master changes the name', async () => {
     const res = await request(app).patch(url()).set(as('miquel')).send({ name: 'El final finit' });
 
     expect(res.status).toBe(200);
     expect(res.body.name).toBe('El final finit');
   });
 
-  it('un jugador → 403 i no canvia res', async () => {
+  it('a player → 403 and nothing changes', async () => {
     const res = await request(app).patch(url()).set(as('laia')).send({ inviteOpen: false });
 
     expect(res.status).toBe(403);
@@ -130,12 +130,12 @@ describe('PATCH /api/campaigns/:cid', () => {
     expect(res.body.fields.maxPlayers).toBeDefined();
   });
 
-  it("no deixa canviar el codi d'invitació per aquí → 400", async () => {
+  it("does not allow changing the invite code here → 400", async () => {
     const res = await request(app).patch(url()).set(as('miquel')).send({ inviteCode: 'ALTRE234' });
     expect(res.status).toBe(400);
   });
 
-  it('una campanya arxivada és només de lectura → 409', async () => {
+  it('an archived campaign is read-only → 409', async () => {
     await prisma.campaign.update({ where: { id: cid }, data: { archivedAt: new Date() } });
 
     const res = await request(app).patch(url()).set(as('miquel')).send({ name: 'Un altre nom' });

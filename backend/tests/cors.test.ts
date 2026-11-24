@@ -10,13 +10,13 @@ afterAll(async () => {
 });
 
 describe('CORS', () => {
-  it("permet l'origen del frontend local", async () => {
+  it("allows the local frontend origin", async () => {
     const res = await request(app).get('/api/health').set('Origin', 'http://localhost:4200');
 
     expect(res.headers['access-control-allow-origin']).toBe('http://localhost:4200');
   });
 
-  it('no permet un origen desconegut', async () => {
+  it('rejects an unknown origin', async () => {
     const res = await request(app).get('/api/health').set('Origin', 'https://web-maliciosa.com');
 
     expect(res.headers['access-control-allow-origin']).toBeUndefined();

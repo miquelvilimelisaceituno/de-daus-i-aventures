@@ -18,24 +18,24 @@ afterAll(async () => {
 });
 
 describe('requireAuth', () => {
-  it('sense token → 401', async () => {
+  it('no token → 401', async () => {
     const res = await request(app).get('/api/me');
     expect(res.status).toBe(401);
   });
 
-  it('token no vàlid → 401', async () => {
+  it('invalid token → 401', async () => {
     const res = await request(app).get('/api/me').set('Authorization', 'Bearer inventat');
     expect(res.status).toBe(401);
   });
 
-  it('capçalera sense "Bearer " → 401', async () => {
+  it('header without "Bearer " → 401', async () => {
     const res = await request(app).get('/api/me').set('Authorization', 'test:pau');
     expect(res.status).toBe(401);
   });
 });
 
 describe('POST /api/me', () => {
-  it('crea el perfil amb el nom enviat', async () => {
+  it('creates the profile with the given name', async () => {
     const res = await request(app).post('/api/me').set(as('pau')).send({ name: 'Pau' });
 
     expect(res.status).toBe(200);
@@ -43,14 +43,14 @@ describe('POST /api/me', () => {
     expect(await prisma.user.count()).toBe(1);
   });
 
-  it("sense nom, fa servir la part de l'email abans de l'@", async () => {
+  it("without a name, uses the part of the email before the @", async () => {
     const res = await request(app).post('/api/me').set(as('pau')).send({});
 
     expect(res.status).toBe(200);
     expect(res.body.name).toBe('pau');
   });
 
-  it('és idempotent: el segon cop no duplica ni canvia res', async () => {
+  it('is idempotent: the second call neither duplicates nor changes anything', async () => {
     await request(app).post('/api/me').set(as('pau')).send({ name: 'Pau' });
     const res = await request(app).post('/api/me').set(as('pau')).send({ name: 'Un altre' });
 
@@ -59,7 +59,7 @@ describe('POST /api/me', () => {
     expect(await prisma.user.count()).toBe(1);
   });
 
-  it('nom de més de 40 caràcters → 400 amb error al camp name', async () => {
+  it('name longer than 40 characters → 400 with an error on the name field', async () => {
     const res = await request(app).post('/api/me').set(as('pau')).send({ name: 'a'.repeat(41) });
 
     expect(res.status).toBe(400);
@@ -69,12 +69,12 @@ describe('POST /api/me', () => {
 });
 
 describe('GET /api/me', () => {
-  it('404 si el perfil encara no existeix', async () => {
+  it('404 if the profile does not exist yet', async () => {
     const res = await request(app).get('/api/me').set(as('pau'));
     expect(res.status).toBe(404);
   });
 
-  it("retorna el meu perfil i no el d'un altre", async () => {
+  it("returns my profile and not someone else's", async () => {
     await prisma.user.createMany({
       data: [
         { id: 'pau', name: 'Pau' },
@@ -94,7 +94,7 @@ describe('PATCH /api/me', () => {
     await prisma.user.create({ data: { id: 'pau', name: 'Pau' } });
   });
 
-  it("canvia el nom i l'avatar", async () => {
+  it("changes the name and the avatar", async () => {
     const res = await request(app)
       .patch('/api/me')
       .set(as('pau'))
@@ -104,12 +104,12 @@ describe('PATCH /api/me', () => {
     expect(res.body).toMatchObject({ name: 'Pau el Bard', avatarUrl: 'https://example.com/pau.png' });
   });
 
-  it('nom només amb espais → 400', async () => {
+  it('name with only spaces → 400', async () => {
     const res = await request(app).patch('/api/me').set(as('pau')).send({ name: '   ' });
     expect(res.status).toBe(400);
   });
 
-  it('isAdmin → 400 i no canvia res a la BD', async () => {
+  it('isAdmin → 400 and nothing changes in the DB', async () => {
     const res = await request(app).patch('/api/me').set(as('pau')).send({ isAdmin: true });
 
     expect(res.status).toBe(400);
@@ -118,7 +118,7 @@ describe('PATCH /api/me', () => {
     expect(user.isAdmin).toBe(false);
   });
 
-  it('avatar amb javascript: → 400', async () => {
+  it('avatar with javascript: → 400', async () => {
     const res = await request(app)
       .patch('/api/me')
       .set(as('pau'))
@@ -126,7 +126,7 @@ describe('PATCH /api/me', () => {
     expect(res.status).toBe(400);
   });
 
-  it("null treu l'avatar", async () => {
+  it("null removes the avatar", async () => {
     await prisma.user.update({ where: { id: 'pau' }, data: { avatarUrl: 'https://example.com/a.png' } });
 
     const res = await request(app).patch('/api/me').set(as('pau')).send({ avatarUrl: null });
@@ -135,7 +135,7 @@ describe('PATCH /api/me', () => {
     expect(res.body.avatarUrl).toBeNull();
   });
 
-  it('404 si el perfil no existeix', async () => {
+  it('404 if the profile does not exist', async () => {
     const res = await request(app).patch('/api/me').set(as('anna')).send({ name: 'Anna' });
     expect(res.status).toBe(404);
   });

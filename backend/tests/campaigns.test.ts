@@ -36,7 +36,7 @@ async function campaignWith(name: string, inviteCode: string, master: string, pl
 }
 
 describe('GET /api/health', () => {
-  it('respon 200 amb { ok: true }', async () => {
+  it('responds 200 with { ok: true }', async () => {
     const res = await request(app).get('/api/health');
 
     expect(res.status).toBe(200);
@@ -55,19 +55,19 @@ describe('GET /api/campaigns', () => {
     });
   });
 
-  it('sense token → 401', async () => {
+  it('no token → 401', async () => {
     const res = await request(app).get('/api/campaigns');
     expect(res.status).toBe(401);
   });
 
-  it('sense campanyes → llista buida', async () => {
+  it('no campaigns → empty list', async () => {
     const res = await request(app).get('/api/campaigns').set(as('laia'));
 
     expect(res.status).toBe(200);
     expect(res.body).toEqual([]);
   });
 
-  it('només retorna les campanyes on soc membre, amb el meu rol', async () => {
+  it('only returns the campaigns I am a member of, with my role', async () => {
     await campaignWith('El final infinit', 'DRAC2024', 'miquel', ['laia']);
     await campaignWith('Una altra', 'ALTRA001', 'pau');
 
@@ -78,7 +78,7 @@ describe('GET /api/campaigns', () => {
     expect(res.body[0]).toMatchObject({ name: 'El final infinit', role: 'player' });
   });
 
-  it("el màster veu el codi d'invitació i el jugador no", async () => {
+  it("the master sees the invite code and the player does not", async () => {
     await campaignWith('El final infinit', 'DRAC2024', 'miquel', ['laia']);
 
     const master = await request(app).get('/api/campaigns').set(as('miquel'));
@@ -88,7 +88,7 @@ describe('GET /api/campaigns', () => {
     expect(player.body[0]).not.toHaveProperty('inviteCode');
   });
 
-  it('no retorna les campanyes que he deixat', async () => {
+  it('does not return the campaigns I have left', async () => {
     const campaign = await campaignWith('El final infinit', 'DRAC2024', 'miquel', ['laia']);
     await prisma.membership.update({
       where: { userId_campaignId: { userId: 'laia', campaignId: campaign.id } },
@@ -100,7 +100,7 @@ describe('GET /api/campaigns', () => {
     expect(res.body).toEqual([]);
   });
 
-  it('retorna les campanyes arxivades marcades amb archivedAt', async () => {
+  it('returns archived campaigns marked with archivedAt', async () => {
     const campaign = await campaignWith('El final infinit', 'DRAC2024', 'miquel');
     await prisma.campaign.update({ where: { id: campaign.id }, data: { archivedAt: new Date() } });
 
@@ -116,7 +116,7 @@ describe('POST /api/campaigns', () => {
     await prisma.user.create({ data: { id: 'miquel', name: 'Miquel' } });
   });
 
-  it('crea la campanya i en queda màster, amb un codi de 8 caràcters', async () => {
+  it('creates the campaign and becomes its master, with an 8-character code', async () => {
     const res = await request(app)
       .post('/api/campaigns')
       .set(as('miquel'))
@@ -132,7 +132,7 @@ describe('POST /api/campaigns', () => {
     expect(membership).toMatchObject({ role: 'master', leftAt: null });
   });
 
-  it('nom de menys de 3 caràcters → 400 i no es crea res', async () => {
+  it('name shorter than 3 characters → 400 and nothing is created', async () => {
     const res = await request(app).post('/api/campaigns').set(as('miquel')).send({ name: 'EF' });
 
     expect(res.status).toBe(400);
@@ -140,7 +140,7 @@ describe('POST /api/campaigns', () => {
     expect(await prisma.campaign.count()).toBe(0);
   });
 
-  it("no deixa triar el codi d'invitació → 400", async () => {
+  it("does not allow choosing the invite code → 400", async () => {
     const res = await request(app)
       .post('/api/campaigns')
       .set(as('miquel'))
@@ -150,7 +150,7 @@ describe('POST /api/campaigns', () => {
     expect(await prisma.campaign.count()).toBe(0);
   });
 
-  it('sense perfil → 404 i no queda cap campanya a mitges', async () => {
+  it('no profile → 404 and no half-created campaign is left', async () => {
     const res = await request(app).post('/api/campaigns').set(as('laia')).send({ name: 'Sense perfil' });
 
     expect(res.status).toBe(404);
