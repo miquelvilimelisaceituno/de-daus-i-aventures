@@ -1,25 +1,16 @@
-import { prisma } from '../db/prisma';
 import { HttpError } from '../http/http-error';
-import type { CampaignMember } from '../auth/load-membership';
+import * as membershipsRepository from '../repositories/memberships.repository';
+import type { CampaignMember } from './campaign-member';
+
+// Lògica dels membres d'una campanya (F1).
 
 export const MASTER_CANNOT_LEAVE =
   'El màster no pot sortir de la seva campanya: arxiva-la o elimina-la';
 export const MEMBER_NOT_FOUND = 'Membre no trobat';
 
-/** Membres actius: primer el màster (ordre de l'enum) i després per antiguitat. */
-export async function listMembers(campaignId: string) {
-  const memberships = await prisma.membership.findMany({
-    where: { campaignId, leftAt: null },
-    orderBy: [{ role: 'asc' }, { joinedAt: 'asc' }],
-    select: { role: true, joinedAt: true, user: { select: { id: true, name: true, avatarUrl: true } } },
-  });
-  return memberships.map(({ user, role, joinedAt }) => ({
-    userId: user.id,
-    name: user.name,
-    avatarUrl: user.avatarUrl,
-    role,
-    joinedAt,
-  }));
+/** Membres actius: primer el màster i després per antiguitat. */
+export function listMembers(campaignId: string) {
+  return membershipsRepository.listActiveByCampaign(campaignId);
 }
 
 /**
@@ -36,12 +27,7 @@ export async function removeMember(me: CampaignMember, userId: string) {
     throw new HttpError(409, 'La campanya està arxivada i és només de lectura');
   }
 
-  // updateMany amb leftAt: null → només toca una pertinença activa, i si no n'hi ha, count = 0.
-  // role: 'player' → el màster mai es pot treure per aquesta via.
-  const { count } = await prisma.membership.updateMany({
-    where: { userId, campaignId: me.campaignId, leftAt: null, role: 'player' },
-    data: { leftAt: new Date() },
-  });
+  const count = await membershipsRepository.deactivatePlayer(userId, me.campaignId);
   if (count === 0) throw new HttpError(404, MEMBER_NOT_FOUND);
 
   // Pendent quan existeixin les taules (mateixa transacció, CRUD §5.3):

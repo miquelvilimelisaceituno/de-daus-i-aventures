@@ -1,5 +1,5 @@
 import { describe, expect, it } from '@jest/globals';
-import { generateInviteCode } from '../src/campaigns/invite-code';
+import { generateInviteCode } from '../src/services/invite-code';
 
 describe('generateInviteCode', () => {
   it('genera 8 caràcters sense els que es confonen (0, O, 1, I, L)', () => {
