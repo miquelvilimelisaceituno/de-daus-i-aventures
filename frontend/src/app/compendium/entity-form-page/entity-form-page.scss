@@ -1,0 +1,62 @@
+.pagina {
+  max-width: 720px;
+  margin: 0 auto;
+  padding: var(--esp-8) var(--marge-lateral);
+}
+
+.tornar {
+  display: inline-block;
+  margin-bottom: var(--esp-4);
+  color: var(--c-primari);
+  font: var(--t-interficie);
+}
+
+form {
+  display: grid;
+  gap: var(--esp-4);
+}
+
+.camp {
+  display: grid;
+  gap: var(--esp-1);
+
+  select,
+  textarea {
+    padding: var(--esp-2) var(--esp-3);
+    border: 1px solid var(--c-vora-camp);
+    border-radius: var(--radi-m);
+    background: var(--c-superficie);
+    color: var(--c-text);
+    font: var(--t-cos);
+  }
+
+  select {
+    min-height: var(--tactil-min);
+  }
+
+  [aria-invalid='true'] {
+    border-color: var(--c-error);
+  }
+}
+
+.etiqueta-camp {
+  font: var(--t-interficie);
+}
+
+.error-camp {
+  color: var(--c-error);
+  font: var(--t-petit);
+}
+
+.casella {
+  display: flex;
+  align-items: center;
+  gap: var(--esp-2);
+  min-height: var(--tactil-min);
+}
+
+.accions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--esp-3);
+}

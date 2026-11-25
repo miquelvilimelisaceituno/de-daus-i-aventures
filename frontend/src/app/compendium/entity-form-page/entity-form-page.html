@@ -1,0 +1,64 @@
+<section class="pagina">
+  <a class="tornar" routerLink="..">← Torna</a>
+  <h1 class="titol-pagina">{{ editing() ? 'Edita l’entitat' : 'Nova entitat' }}</h1>
+
+  @if (loading()) {
+    <p>Carregant…</p>
+  } @else if (loadError(); as message) {
+    <p class="missatge error" role="alert">{{ message }}</p>
+  } @else {
+    <app-card>
+      <form [formGroup]="form" (ngSubmit)="submit()" novalidate>
+        <label class="camp">
+          <span class="etiqueta-camp">Tipus</span>
+          <select
+            formControlName="type"
+            [attr.aria-invalid]="typeError() ? true : null"
+            [attr.aria-describedby]="typeError() ? 'error-tipus' : null"
+          >
+            <option value="" disabled>Tria un tipus</option>
+            @for (t of types; track t) {
+              <option [value]="t">{{ typeLabels[t] }}</option>
+            }
+          </select>
+          @if (typeError(); as message) {
+            <span id="error-tipus" class="error-camp">{{ message }}</span>
+          }
+        </label>
+
+        <app-field label="Nom" formControlName="name" [error]="nameError()" />
+
+        <label class="camp">
+          <span class="etiqueta-camp">Descripció</span>
+          <textarea
+            formControlName="description"
+            rows="6"
+            [attr.maxlength]="descriptionMax"
+            [attr.aria-invalid]="descriptionError() ? true : null"
+            [attr.aria-describedby]="descriptionError() ? 'error-descripcio' : null"
+          ></textarea>
+          @if (descriptionError(); as message) {
+            <span id="error-descripcio" class="error-camp">{{ message }}</span>
+          }
+        </label>
+
+        <app-field label="Adreça de la imatge (opcional)" formControlName="imageUrl" [error]="imageUrlError()" />
+
+        <label class="casella">
+          <input type="checkbox" formControlName="isSecret" />
+          Secreta: només la veu el màster fins que la revela
+        </label>
+
+        @if (formError(); as message) {
+          <p class="missatge error" role="alert">{{ message }}</p>
+        }
+        <div class="accions">
+          <button appButton type="submit" [disabled]="pending()">
+            {{ pending() ? 'Desant…' : editing() ? 'Desa els canvis' : 'Crea-la' }}
+          </button>
+          <a appButton variant="secundari" routerLink="..">Cancel·la</a>
+        </div>
+      </form>
+    </app-card>
+  }
+</section>

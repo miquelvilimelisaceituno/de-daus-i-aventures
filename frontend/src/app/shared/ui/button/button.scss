@@ -11,6 +11,7 @@
   border: 1px solid var(--c-primari);
   border-radius: var(--radi-s);
   font: var(--t-interficie);
+  text-decoration: none; // també quan és un <a>
   cursor: pointer;
 }
 
