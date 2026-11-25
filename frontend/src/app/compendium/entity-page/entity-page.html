@@ -1,0 +1,57 @@
+<section class="pagina">
+  <a class="tornar" routerLink="..">← Compendi</a>
+
+  @if (entity.isLoading()) {
+    <p>Carregant…</p>
+  } @else if (notFound()) {
+    <h1 class="titol-pagina">No trobada</h1>
+    <p>Aquesta entitat no existeix o encara no l’has descoberta.</p>
+  } @else if (entity.error()) {
+    <p class="missatge error" role="alert">No s’ha pogut carregar l’entitat.</p>
+    <button appButton type="button" (click)="entity.reload()">Torna-ho a provar</button>
+  } @else if (entity.value(); as e) {
+    <article>
+      <h1 class="titol-pagina">{{ e.name }}</h1>
+      <p class="etiquetes">
+        <span class="etiqueta">{{ typeLabels[e.type] }}</span>
+        @if (e.isSecret) {
+          <span class="etiqueta secreta">Secreta</span>
+        }
+        @if (e.archivedAt) {
+          <span class="etiqueta arxivada">Arxivada</span>
+        }
+      </p>
+
+      @if (e.imageUrl) {
+        <img class="imatge" [src]="e.imageUrl" alt="" />
+      }
+      @if (e.description) {
+        <p class="descripcio">{{ e.description }}</p>
+      } @else {
+        <p class="sense-descripcio">Sense descripció.</p>
+      }
+    </article>
+
+    @if (canManage()) {
+      <div class="accions">
+        <a appButton variant="secundari" routerLink="editar">Edita</a>
+        @if (e.isSecret) {
+          <button appButton type="button" [disabled]="busy()" (click)="reveal(e)">Revela-la als jugadors</button>
+        } @else {
+          <button appButton variant="secundari" type="button" [disabled]="busy()" (click)="hide(e)">Amaga-la</button>
+        }
+        @if (e.archivedAt) {
+          <button appButton variant="secundari" type="button" [disabled]="busy()" (click)="unarchive(e)">Recupera-la</button>
+        } @else {
+          <button appButton variant="secundari" type="button" [disabled]="busy()" (click)="archive(e)">Arxiva-la</button>
+        }
+        <button appButton variant="secundari" type="button" class="perill" [disabled]="busy()" (click)="remove(e)">
+          Elimina-la
+        </button>
+      </div>
+      @if (actionError(); as message) {
+        <p class="missatge error" role="alert">{{ message }}</p>
+      }
+    }
+  }
+</section>

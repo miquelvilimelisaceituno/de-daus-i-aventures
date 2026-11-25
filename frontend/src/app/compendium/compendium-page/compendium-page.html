@@ -1,0 +1,77 @@
+<section class="pagina">
+  <header class="capcalera">
+    <h1 class="titol-pagina">Compendi</h1>
+    @if (context.isMaster() && !context.isArchived()) {
+      <a appButton class="boto-nova" routerLink="nova">Nova entitat</a>
+    }
+  </header>
+
+  <div class="filtres">
+    <label class="cerca">
+      <span class="etiqueta-camp">Cerca</span>
+      <input
+        type="search"
+        autocomplete="off"
+        placeholder="Nom de l’entitat"
+        [value]="searchText()"
+        (input)="onSearch($any($event.target).value)"
+      />
+    </label>
+
+    <div class="tipus" role="group" aria-label="Filtra per tipus">
+      <button type="button" class="xip" [attr.aria-pressed]="!type()" (click)="setType(undefined)">Totes</button>
+      @for (t of types; track t) {
+        <button type="button" class="xip" [attr.aria-pressed]="type() === t" (click)="setType(t)">
+          {{ typePlurals[t] }}
+        </button>
+      }
+    </div>
+
+    @if (context.isMaster()) {
+      <label class="arxivades">
+        <input type="checkbox" [checked]="archived()" (change)="archived.set($any($event.target).checked)" />
+        Mostra només les arxivades
+      </label>
+    }
+  </div>
+
+  @if (entities.isLoading()) {
+    <p>Carregant…</p>
+  } @else if (entities.error()) {
+    <p class="missatge error" role="alert">No s’ha pogut carregar el compendi.</p>
+    <button appButton type="button" (click)="entities.reload()">Torna-ho a provar</button>
+  } @else {
+    <ul class="llista" aria-live="polite">
+      @for (entity of entities.value(); track entity.id) {
+        <li>
+          <app-card class="targeta">
+            <article>
+              <h2 class="nom">
+                <a class="enllac" [routerLink]="entity.id">{{ entity.name }}</a>
+              </h2>
+              <p class="etiquetes">
+                <span class="etiqueta">{{ typeLabels[entity.type] }}</span>
+                @if (entity.isSecret) {
+                  <span class="etiqueta secreta">Secreta</span>
+                }
+                @if (entity.archivedAt) {
+                  <span class="etiqueta arxivada">Arxivada</span>
+                }
+              </p>
+            </article>
+          </app-card>
+        </li>
+      } @empty {
+        <li class="buit">
+          @if (filtering()) {
+            Cap resultat.
+          } @else if (context.isMaster()) {
+            El compendi encara és buit. Crea el primer PNJ, lloc o facció amb «Nova entitat».
+          } @else {
+            El compendi encara és buit: el màster encara no ha revelat cap entitat.
+          }
+        </li>
+      }
+    </ul>
+  }
+</section>
