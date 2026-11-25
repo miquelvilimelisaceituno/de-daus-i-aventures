@@ -7,6 +7,7 @@ import {
   requireRole,
 } from '../middlewares/load-membership';
 import { requireAuth } from '../middlewares/require-auth';
+import { entitiesRouter } from './entities.routes';
 
 /**
  * /api/campaigns: només connecta cada ruta amb els seus middlewares i el controlador.
@@ -33,3 +34,5 @@ campaignRouter.patch('/', ...masterOnly, campaignsController.update);
 campaignRouter.post('/invite-code', ...masterOnly, campaignsController.regenerateInviteCode);
 campaignRouter.get('/members', membersController.list);
 campaignRouter.delete('/members/:userId', membersController.remove);
+// Recursos de la campanya.
+campaignRouter.use('/entities', entitiesRouter);
