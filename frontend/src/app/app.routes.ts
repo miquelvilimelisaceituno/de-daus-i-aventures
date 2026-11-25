@@ -50,8 +50,20 @@ export const routes: Routes = [
               import('./compendium/compendium-page/compendium-page').then((m) => m.CompendiumPage),
           },
           {
+            path: 'nova',
+            loadComponent: () =>
+              import('./compendium/entity-form-page/entity-form-page').then((m) => m.EntityFormPage),
+            canActivate: [masterGuard],
+          },
+          {
             path: ':entityId',
             loadComponent: () => import('./compendium/entity-page/entity-page').then((m) => m.EntityPage),
+          },
+          {
+            path: ':entityId/editar',
+            loadComponent: () =>
+              import('./compendium/entity-form-page/entity-form-page').then((m) => m.EntityFormPage),
+            canActivate: [masterGuard],
           },
         ],
       },
