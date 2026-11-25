@@ -19,6 +19,14 @@ class Host {
 })
 class SecondaryHost {}
 
+
+@Component({
+  selector: 'app-button-link-host',
+  imports: [Button],
+  template: `<a appButton href="/nova">Nova entitat</a>`,
+})
+class LinkHost {}
+
 describe('Button', () => {
   async function render() {
     const fixture = TestBed.createComponent(Host);
@@ -59,5 +67,15 @@ describe('Button', () => {
     await fixture.whenStable();
     const secondary = (fixture.nativeElement as HTMLElement).querySelector('button')!;
     expect(secondary.classList.contains('secundari')).toBe(true);
+  });
+  
+  it('can also be applied to a link that looks like a button', async () => {
+    const fixture = TestBed.createComponent(LinkHost);
+    await fixture.whenStable();
+
+    const applied = fixture.debugElement.query(By.directive(Button));
+
+    expect(applied?.nativeElement.tagName).toBe('A');
+    expect(applied?.nativeElement.getAttribute('href')).toBe('/nova');
   });
 });
