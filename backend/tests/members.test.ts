@@ -41,7 +41,7 @@ afterAll(async () => {
 });
 
 describe('GET /api/campaigns/:cid/members', () => {
-  it('un jugador veu els membres actius: primer el màster i després per antiguitat', async () => {
+  it('a player sees the active members: the master first, then by seniority', async () => {
     const res = await members('laia');
 
     expect(res.status).toBe(200);
@@ -53,7 +53,7 @@ describe('GET /api/campaigns/:cid/members', () => {
     expect(res.body[0]).toMatchObject({ name: 'Miquel', avatarUrl: null });
   });
 
-  it('no hi surten els que han sortit', async () => {
+  it('members who have left are not listed', async () => {
     await prisma.membership.update({
       where: { userId_campaignId: { userId: 'pau', campaignId: cid } },
       data: { leftAt: new Date() },
@@ -64,14 +64,14 @@ describe('GET /api/campaigns/:cid/members', () => {
     expect(res.body.map((m: { userId: string }) => m.userId)).toEqual(['miquel', 'laia']);
   });
 
-  it('qui no és membre → 403', async () => {
+  it('a non-member → 403', async () => {
     const res = await members('anna');
     expect(res.status).toBe(403);
   });
 });
 
 describe('DELETE /api/campaigns/:cid/members/:userId', () => {
-  it("un jugador surt (HU-15): la fila es conserva amb left_at i perd l'accés", async () => {
+  it("a player leaves (HU-15): the row is kept with left_at and access is lost", async () => {
     const res = await remove('laia', 'laia');
 
     expect(res.status).toBe(204);
@@ -83,26 +83,26 @@ describe('DELETE /api/campaigns/:cid/members/:userId', () => {
     expect(detail.status).toBe(403);
   });
 
-  it('el màster expulsa un jugador (HU-14)', async () => {
+  it('the master removes a player (HU-14)', async () => {
     const res = await remove('miquel', 'pau');
 
     expect(res.status).toBe(204);
     expect((await membership('pau')).leftAt).not.toBeNull();
   });
 
-  it('un jugador no pot expulsar un altre jugador → 403', async () => {
+  it('a player cannot remove another player → 403', async () => {
     const res = await remove('laia', 'pau');
 
     expect(res.status).toBe(403);
     expect((await membership('pau')).leftAt).toBeNull();
   });
 
-  it('un jugador no pot expulsar el màster → 403', async () => {
+  it('a player cannot remove the master → 403', async () => {
     const res = await remove('laia', 'miquel');
     expect(res.status).toBe(403);
   });
 
-  it('el màster no pot sortir de la seva campanya → 409', async () => {
+  it('the master cannot leave their own campaign → 409', async () => {
     const res = await remove('miquel', 'miquel');
 
     expect(res.status).toBe(409);
@@ -110,26 +110,26 @@ describe('DELETE /api/campaigns/:cid/members/:userId', () => {
     expect((await membership('miquel')).leftAt).toBeNull();
   });
 
-  it('expulsar algú que no és membre → 404', async () => {
+  it('removing someone who is not a member → 404', async () => {
     const res = await remove('miquel', 'anna');
     expect(res.status).toBe(404);
   });
 
-  it('expulsar algú que ja ha sortit → 404', async () => {
+  it('removing someone who has already left → 404', async () => {
     await remove('pau', 'pau');
 
     const res = await remove('miquel', 'pau');
     expect(res.status).toBe(404);
   });
 
-  it("d'una campanya arxivada es pot sortir", async () => {
+  it("a player can leave an archived campaign", async () => {
     await prisma.campaign.update({ where: { id: cid }, data: { archivedAt: new Date() } });
 
     const res = await remove('laia', 'laia');
     expect(res.status).toBe(204);
   });
 
-  it('en una campanya arxivada no es pot expulsar → 409', async () => {
+  it('nobody can be removed from an archived campaign → 409', async () => {
     await prisma.campaign.update({ where: { id: cid }, data: { archivedAt: new Date() } });
 
     const res = await remove('miquel', 'pau');

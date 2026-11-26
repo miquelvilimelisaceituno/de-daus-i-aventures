@@ -55,7 +55,7 @@ describe('LoginPage', () => {
     httpMock.verify();
   });
 
-  it('amb el formulari buit, mostra els errors i no crida Firebase', async () => {
+  it('with an empty form, shows the errors and does not call Firebase', async () => {
     const { fixture, page } = await render();
 
     await submit(fixture, page);
@@ -65,7 +65,7 @@ describe('LoginPage', () => {
     expect(gateway.calls).toEqual([]);
   });
 
-  it('avisa si l’email no té format vàlid', async () => {
+  it('warns if the email format is not valid', async () => {
     const { fixture, page, email, password } = await render();
     type(email, 'no-es-un-email');
     type(password, 'secret123');
@@ -76,7 +76,7 @@ describe('LoginPage', () => {
     expect(gateway.calls).toEqual([]);
   });
 
-  it('amb credencials correctes, inicia sessió i va a /campanyes', async () => {
+  it('with valid credentials, signs in and goes to /campanyes', async () => {
     const { fixture, page, email, password } = await render();
     type(email, 'miquel@example.com');
     type(password, 'secret123');
@@ -90,7 +90,7 @@ describe('LoginPage', () => {
     expect(navigate).toHaveBeenCalledWith('/campanyes');
   });
 
-  it('torna a la ruta interna de returnUrl', async () => {
+  it('returns to the internal returnUrl route', async () => {
     const { fixture, page, email, password } = await render('/c/7/diari');
     type(email, 'miquel@example.com');
     type(password, 'secret123');
@@ -102,7 +102,7 @@ describe('LoginPage', () => {
     expect(navigate).toHaveBeenCalledWith('/c/7/diari');
   });
 
-  it('ignora un returnUrl extern', async () => {
+  it('ignores an external returnUrl', async () => {
     const { fixture, page, email, password } = await render('https://web-falsa.com');
     type(email, 'miquel@example.com');
     type(password, 'secret123');
@@ -114,7 +114,7 @@ describe('LoginPage', () => {
     expect(navigate).toHaveBeenCalledWith('/campanyes');
   });
 
-  it('amb credencials incorrectes, mostra l’error sense dir quin camp falla', async () => {
+  it('with wrong credentials, shows the error without saying which field is wrong', async () => {
     const { fixture, page, email, password } = await render();
     gateway.failWith = { code: 'auth/invalid-credential' };
     type(email, 'miquel@example.com');

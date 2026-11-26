@@ -39,7 +39,7 @@ describe('authGuard', () => {
     gateway = new FakeAuthGateway();
   });
 
-  it('sense sessió, redirigeix a /login amb returnUrl', async () => {
+  it('without a session, redirects to /login with returnUrl', async () => {
     const harness = await setup();
 
     await harness.navigateByUrl('/c/7/diari');
@@ -48,7 +48,7 @@ describe('authGuard', () => {
     expect(harness.routeNativeElement?.textContent).toBe('login');
   });
 
-  it('amb sessió, deixa entrar', async () => {
+  it('with a session, lets the user in', async () => {
     gateway.user = { uid: 'uid-1', email: 'miquel@example.com' };
     const harness = await setup();
     const navigation = harness.navigateByUrl('/c/7/diari');

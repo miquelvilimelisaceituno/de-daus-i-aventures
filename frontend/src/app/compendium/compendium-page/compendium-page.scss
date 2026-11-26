@@ -1,0 +1,138 @@
+@use 'breakpoints' as *;
+
+.pagina {
+  max-width: 720px;
+  margin: 0 auto;
+  padding: var(--esp-8) var(--marge-lateral);
+}
+
+.capcalera {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--esp-3);
+  margin-bottom: var(--esp-6);
+
+  .titol-pagina {
+    margin: 0;
+  }
+}
+
+.filtres {
+  display: grid;
+  gap: var(--esp-3);
+  margin-bottom: var(--esp-6);
+}
+
+.cerca {
+  display: grid;
+  gap: var(--esp-1);
+
+  input {
+    min-height: var(--tactil-min);
+    padding: 0 var(--esp-3);
+    border: 1px solid var(--c-vora-camp);
+    border-radius: var(--radi-m);
+    background: var(--c-superficie);
+    color: var(--c-text);
+    font: var(--t-cos);
+  }
+}
+
+.etiqueta-camp {
+  font: var(--t-interficie);
+}
+
+.tipus {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--esp-2);
+}
+
+.xip {
+  min-height: var(--tactil-min);
+  padding: 0 var(--esp-3);
+  border: 1px solid var(--c-vora-camp);
+  border-radius: var(--radi-m);
+  background: transparent;
+  color: var(--c-text);
+  font: var(--t-interficie);
+  cursor: pointer;
+
+  &[aria-pressed='true'] {
+    border-color: var(--c-primari);
+    background: var(--c-primari);
+    color: var(--c-superficie);
+  }
+}
+
+.arxivades {
+  display: flex;
+  align-items: center;
+  gap: var(--esp-2);
+  min-height: var(--tactil-min);
+  font: var(--t-petit);
+}
+
+.llista {
+  display: grid;
+  gap: var(--esp-3);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+// Tota la targeta és clicable: l'enllaç del títol l'estén amb ::after.
+.targeta {
+  position: relative;
+
+  &:hover {
+    border-color: var(--c-or);
+  }
+}
+
+.nom {
+  margin: 0 0 var(--esp-2);
+  font: var(--t-h3);
+}
+
+.enllac {
+  color: inherit;
+  text-decoration: none;
+
+  &::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+  }
+}
+
+.etiquetes {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--esp-2);
+  margin: 0;
+}
+
+.etiqueta {
+  padding: 0 var(--esp-2);
+  border: 1px solid var(--c-vora);
+  border-radius: var(--radi-s);
+  color: var(--c-text-sec);
+  font: var(--t-mini);
+}
+
+.secreta {
+  border-color: var(--c-secret);
+  color: var(--c-secret);
+}
+
+.arxivada {
+  border-color: var(--c-avis);
+  color: var(--c-avis);
+}
+
+.buit {
+  color: var(--c-text-sec);
+}

@@ -19,6 +19,14 @@ class Host {
 })
 class SecondaryHost {}
 
+
+@Component({
+  selector: 'app-button-link-host',
+  imports: [Button],
+  template: `<a appButton href="/nova">Nova entitat</a>`,
+})
+class LinkHost {}
+
 describe('Button', () => {
   async function render() {
     const fixture = TestBed.createComponent(Host);
@@ -27,14 +35,14 @@ describe('Button', () => {
     return { fixture, button };
   }
 
-  it('és un <button> natiu amb el text projectat', async () => {
+  it('is a native <button> with the projected text', async () => {
     const { button } = await render();
 
     expect(button.textContent?.trim()).toBe('Entrar');
     expect(button.type).toBe('submit');
   });
 
-  it('respecta l’atribut disabled natiu', async () => {
+  it('respects the native disabled attribute', async () => {
     const { fixture, button } = await render();
 
     fixture.componentInstance.disabled.set(true);
@@ -43,7 +51,7 @@ describe('Button', () => {
     expect(button.disabled).toBe(true);
   });
 
-  it('el component s’aplica sobre el <button>', async () => {
+  it('the component is applied to the <button>', async () => {
     const { fixture } = await render();
 
     const applied = fixture.debugElement.query(By.directive(Button));
@@ -51,7 +59,7 @@ describe('Button', () => {
     expect(applied?.nativeElement.tagName).toBe('BUTTON');
   });
 
-  it('per defecte és primari; amb variant="secundari" porta la classe secundari', async () => {
+  it('is primary by default; with variant="secundari" it has the secundari class', async () => {
     const { button } = await render();
     expect(button.classList.contains('secundari')).toBe(false);
 
@@ -59,5 +67,15 @@ describe('Button', () => {
     await fixture.whenStable();
     const secondary = (fixture.nativeElement as HTMLElement).querySelector('button')!;
     expect(secondary.classList.contains('secundari')).toBe(true);
+  });
+  
+  it('can also be applied to a link that looks like a button', async () => {
+    const fixture = TestBed.createComponent(LinkHost);
+    await fixture.whenStable();
+
+    const applied = fixture.debugElement.query(By.directive(Button));
+
+    expect(applied?.nativeElement.tagName).toBe('A');
+    expect(applied?.nativeElement.getAttribute('href')).toBe('/nova');
   });
 });

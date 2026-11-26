@@ -9,7 +9,7 @@ import { Component } from '@angular/core';
 class Host {}
 
 describe('Card', () => {
-  it('mostra el contingut que rep', async () => {
+  it('shows the projected content', async () => {
     const fixture = TestBed.createComponent(Host);
     await fixture.whenStable();
 

@@ -35,7 +35,7 @@ afterAll(async () => {
 });
 
 describe('POST /api/campaigns/join (HU-12)', () => {
-  it('amb un codi vàlid, entra com a jugador i no veu el codi', async () => {
+  it('with a valid code, joins as a player and does not see the code', async () => {
     const res = await join('laia', 'DRAC2024');
 
     expect(res.status).toBe(200);
@@ -44,12 +44,12 @@ describe('POST /api/campaigns/join (HU-12)', () => {
     expect(await membership('laia')).toMatchObject({ role: 'player', leftAt: null });
   });
 
-  it('accepta el codi en minúscules i amb espais', async () => {
+  it('accepts the code in lowercase and with spaces', async () => {
     const res = await join('laia', '  drac2024 ');
     expect(res.status).toBe(200);
   });
 
-  it('codi inexistent → 404 «Codi no vàlid»', async () => {
+  it('unknown code → 404 «Codi no vàlid»', async () => {
     const res = await join('laia', 'XXXX0000');
 
     expect(res.status).toBe(404);
@@ -57,12 +57,12 @@ describe('POST /api/campaigns/join (HU-12)', () => {
     expect(await membership('laia')).toBeNull();
   });
 
-  it('sense codi → 400', async () => {
+  it('no code → 400', async () => {
     const res = await request(app).post('/api/campaigns/join').set(as('laia')).send({});
     expect(res.status).toBe(400);
   });
 
-  it('ja és jugador → 409 i continua tenint una sola pertinença', async () => {
+  it('already a player → 409 and still has a single membership', async () => {
     await join('laia', 'DRAC2024');
 
     const res = await join('laia', 'DRAC2024');
@@ -72,12 +72,12 @@ describe('POST /api/campaigns/join (HU-12)', () => {
     expect(await prisma.membership.count({ where: { userId: 'laia' } })).toBe(1);
   });
 
-  it('el màster amb el seu propi codi → 409', async () => {
+  it('the master with their own code → 409', async () => {
     const res = await join('miquel', 'DRAC2024');
     expect(res.status).toBe(409);
   });
 
-  it('invitacions tancades → 403 «no admet nous jugadors» (HU-16)', async () => {
+  it('invitations closed → 403 «no admet nous jugadors» (HU-16)', async () => {
     await prisma.campaign.update({ where: { id: cid }, data: { inviteOpen: false } });
 
     const res = await join('laia', 'DRAC2024');
@@ -86,7 +86,7 @@ describe('POST /api/campaigns/join (HU-12)', () => {
     expect(res.body.error).toBe('Aquesta campanya no admet nous jugadors');
   });
 
-  it('campanya plena → 403 (el màster no compta com a jugador) (HU-16)', async () => {
+  it('campaign full → 403 (the master does not count as a player) (HU-16)', async () => {
     await prisma.campaign.update({ where: { id: cid }, data: { maxPlayers: 1 } });
     expect((await join('laia', 'DRAC2024')).status).toBe(200);
 
@@ -95,14 +95,14 @@ describe('POST /api/campaigns/join (HU-12)', () => {
     expect(res.status).toBe(403);
   });
 
-  it('campanya arxivada → 403', async () => {
+  it('archived campaign → 403', async () => {
     await prisma.campaign.update({ where: { id: cid }, data: { archivedAt: new Date() } });
 
     const res = await join('laia', 'DRAC2024');
     expect(res.status).toBe(403);
   });
 
-  it('qui havia sortit torna a entrar amb la mateixa pertinença (D31)', async () => {
+  it('someone who had left rejoins with the same membership (D31)', async () => {
     await join('laia', 'DRAC2024');
     const leftAt = new Date('2026-11-01T10:00:00Z');
     await prisma.membership.update({
@@ -119,14 +119,14 @@ describe('POST /api/campaigns/join (HU-12)', () => {
     expect(await prisma.membership.count({ where: { userId: 'laia' } })).toBe(1);
   });
 
-  it('sense perfil → 404 «Perfil no trobat»', async () => {
+  it('no profile → 404 «Perfil no trobat»', async () => {
     const res = await join('sense-perfil', 'DRAC2024');
 
     expect(res.status).toBe(404);
     expect(res.body.error).toBe('Perfil no trobat');
   });
 
-  it("amb una plaça lliure i dues persones alhora, només n'entra una", async () => {
+  it("with one free seat and two people at once, only one gets in", async () => {
     await prisma.campaign.update({ where: { id: cid }, data: { maxPlayers: 1 } });
 
     const results = await Promise.all([join('laia', 'DRAC2024'), join('pau', 'DRAC2024')]);
@@ -139,7 +139,7 @@ describe('POST /api/campaigns/join (HU-12)', () => {
 describe('POST /api/campaigns/:cid/invite-code (HU-11)', () => {
   const regenerate = (uid: string) => request(app).post(`/api/campaigns/${cid}/invite-code`).set(as(uid));
 
-  it("el màster obté un codi nou: el nou funciona i l'antic ja no", async () => {
+  it("the master gets a new code: the new one works and the old one no longer does", async () => {
     const res = await regenerate('miquel');
 
     expect(res.status).toBe(200);
@@ -150,7 +150,7 @@ describe('POST /api/campaigns/:cid/invite-code (HU-11)', () => {
     expect((await join('laia', res.body.inviteCode)).status).toBe(200);
   });
 
-  it('un jugador → 403 i el codi no canvia', async () => {
+  it('a player → 403 and the code does not change', async () => {
     await join('laia', 'DRAC2024');
 
     const res = await regenerate('laia');
@@ -160,7 +160,7 @@ describe('POST /api/campaigns/:cid/invite-code (HU-11)', () => {
     expect(campaign.inviteCode).toBe('DRAC2024');
   });
 
-  it('campanya arxivada → 409', async () => {
+  it('archived campaign → 409', async () => {
     await prisma.campaign.update({ where: { id: cid }, data: { archivedAt: new Date() } });
 
     const res = await regenerate('miquel');

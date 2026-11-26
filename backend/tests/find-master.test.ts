@@ -1,5 +1,5 @@
 import { afterAll, beforeEach, expect, it } from '@jest/globals';
-import { findMaster } from '../src/campaigns/find-master';
+import { findMaster } from '../src/repositories/memberships.repository';
 import { prisma } from '../src/db/prisma';
 import { resetDb } from './helpers/db';
 
@@ -12,7 +12,7 @@ afterAll(async () => {
 });
 
 // El parany de D46: findUnique({ where: { campaignId } }) pot retornar un jugador.
-it('retorna el màster encara que el jugador sigui el primer membre', async () => {
+it('returns the master even when the player is the first member', async () => {
   await prisma.user.createMany({
     data: [
       { id: 'laia', name: 'Laia' },

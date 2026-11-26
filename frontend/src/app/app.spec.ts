@@ -21,7 +21,7 @@ describe('App', () => {
       .compileComponents();
   });
 
-  it('es crea amb la capçalera', async () => {
+  it('is created with the header', async () => {
     const fixture = TestBed.createComponent(App);
     await fixture.whenStable();
 

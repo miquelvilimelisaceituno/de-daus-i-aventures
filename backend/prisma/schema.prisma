@@ -23,6 +23,7 @@ model Campaign {
   updatedAt   DateTime  @updatedAt @map("updated_at") @db.Timestamptz
 
   memberships Membership[]
+  entities    Entity[]
 
   @@map("campaigns")
 }
@@ -69,4 +70,41 @@ model Membership {
   // Membres d'una campanya (la PK comença per user_id i no serveix per a aquesta cerca).
   @@index([campaignId])
   @@map("memberships")
+}
+
+enum EntityType {
+  npc
+  location
+  faction
+
+  @@map("entity_type")
+}
+
+// Entitat del compendi (F3): PNJ, localització o facció. Secreta per defecte (MVP §5.6).
+// Amb aparicions al diari només es pot arxivar (D6); sense, es pot eliminar.
+model Entity {
+  id          String     @id @default(uuid(7)) @db.Uuid
+  campaignId  String     @map("campaign_id") @db.Uuid
+  type        EntityType
+  name        String     @db.VarChar(80)
+  // El nom en minúscules i sense accents: la cerca no els distingeix (HU-33). L'omple el repositori.
+  searchName  String     @map("search_name") @db.VarChar(80)
+  description String?
+  imageUrl    String?    @map("image_url")
+  isSecret    Boolean    @default(true) @map("is_secret")
+  // Posició al mapa de la campanya (F6), en percentatge de la imatge.
+  mapX        Float?     @map("map_x")
+  mapY        Float?     @map("map_y")
+  archivedAt  DateTime?  @map("archived_at") @db.Timestamptz
+  createdAt   DateTime   @default(now()) @map("created_at") @db.Timestamptz
+  updatedAt   DateTime   @updatedAt @map("updated_at") @db.Timestamptz
+
+  campaign Campaign @relation(fields: [campaignId], references: [id], onDelete: Cascade)
+
+  // Destins de les FK compostes dels encontres (F2, D30): mateixa campanya i, per al lloc, tipus location.
+  @@unique([id, campaignId])
+  @@unique([id, campaignId, type])
+  // El compendi d'una campanya, filtrat per tipus.
+  @@index([campaignId, type])
+  @@map("entities")
 }

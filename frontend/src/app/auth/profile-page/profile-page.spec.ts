@@ -66,7 +66,7 @@ describe('ProfilePage', () => {
     httpMock.verify();
   });
 
-  it('mostra el perfil i omple el formulari', async () => {
+  it('shows the profile and fills in the form', async () => {
     const { page } = await render();
 
     expect(page.querySelector('.nom')?.textContent).toBe('Miquel');
@@ -75,7 +75,7 @@ describe('ProfilePage', () => {
     expect(inputs(page).avatar.value).toBe('');
   });
 
-  it('desa el nom i l’avatar amb PATCH /api/me', async () => {
+  it('saves the name and the avatar with PATCH /api/me', async () => {
     const { fixture, page } = await render();
     const { name, avatar } = inputs(page);
     type(name, '  Miquel el Savi ');
@@ -97,7 +97,7 @@ describe('ProfilePage', () => {
     expect(page.querySelector('img.avatar')?.getAttribute('src')).toBe('https://example.com/miquel.png');
   });
 
-  it('un avatar buit s’envia com a null (treure l’avatar)', async () => {
+  it('an empty avatar is sent as null (removes the avatar)', async () => {
     const { fixture, page } = await render({ ...PROFILE, avatarUrl: 'https://example.com/a.png' });
     type(inputs(page).avatar, '   ');
 
@@ -108,7 +108,7 @@ describe('ProfilePage', () => {
     await settle();
   });
 
-  it('valida el nom i l’adreça de l’avatar abans d’enviar', async () => {
+  it('validates the name and the avatar URL before sending', async () => {
     const { fixture, page } = await render();
     const { name, avatar } = inputs(page);
     type(name, '');
@@ -121,7 +121,7 @@ describe('ProfilePage', () => {
     httpMock.expectNone(ME);
   });
 
-  it('si l’API falla en desar, ho diu i manté el que s’ha escrit', async () => {
+  it('if the API fails on save, says so and keeps what was typed', async () => {
     const { fixture, page } = await render();
     type(inputs(page).name, 'Miquel el Savi');
 
@@ -136,7 +136,7 @@ describe('ProfilePage', () => {
     expect(inputs(page).name.value).toBe('Miquel el Savi');
   });
 
-  it('si el perfil no s’ha pogut carregar, permet tornar-ho a provar', async () => {
+  it('if the profile could not be loaded, allows retrying', async () => {
     const { fixture, page } = await render({ error: 'Error' }, 503);
 
     expect(page.querySelector('[role="alert"]')?.textContent).toContain(
@@ -153,7 +153,7 @@ describe('ProfilePage', () => {
     expect(inputs(page).name.value).toBe('Miquel');
   });
 
-  it('tanca la sessió i va al login', async () => {
+  it('signs out and goes to the login', async () => {
     const { page } = await render();
     const logout = Array.from(page.querySelectorAll('button')).find((b) =>
       b.textContent?.includes('Tanca la sessió'),

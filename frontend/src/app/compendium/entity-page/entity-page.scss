@@ -1,0 +1,73 @@
+.pagina {
+  max-width: 720px;
+  margin: 0 auto;
+  padding: var(--esp-8) var(--marge-lateral);
+}
+
+.tornar {
+  display: inline-block;
+  margin-bottom: var(--esp-4);
+  color: var(--c-primari);
+  font: var(--t-interficie);
+}
+
+.titol-pagina {
+  margin: 0 0 var(--esp-2);
+}
+
+.etiquetes {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--esp-2);
+  margin: 0 0 var(--esp-4);
+}
+
+.etiqueta {
+  padding: 0 var(--esp-2);
+  border: 1px solid var(--c-vora);
+  border-radius: var(--radi-s);
+  color: var(--c-text-sec);
+  font: var(--t-mini);
+}
+
+.secreta {
+  border-color: var(--c-secret);
+  color: var(--c-secret);
+}
+
+.arxivada {
+  border-color: var(--c-avis);
+  color: var(--c-avis);
+}
+
+.imatge {
+  display: block;
+  max-width: 100%;
+  max-height: 320px;
+  margin-bottom: var(--esp-4);
+  border: 1px solid var(--c-vora);
+  border-radius: var(--radi-m);
+  object-fit: cover;
+}
+
+// Respecta els salts de línia que escriu el màster.
+.descripcio {
+  white-space: pre-line;
+}
+
+.sense-descripcio {
+  color: var(--c-text-sec);
+  font-style: italic;
+}
+
+.accions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--esp-3);
+  margin-top: var(--esp-6);
+}
+
+.perill {
+  border-color: var(--c-error);
+  color: var(--c-error);
+}

@@ -1,5 +1,5 @@
 import { randomInt } from 'node:crypto';
-import { Prisma } from '../generated/prisma/client';
+import { isUniqueViolation } from '../db/errors';
 
 // Sense 0/O, 1/I/L: el codi es dicta i es copia a mà.
 const ALPHABET = 'ABCDEFGHJKMNPQRSTUVWXYZ23456789';
@@ -30,7 +30,7 @@ export async function withFreshInviteCode<T>(
     try {
       return await write(generateCode());
     } catch (err) {
-      if (err instanceof Prisma.PrismaClientKnownRequestError && err.code === 'P2002') continue;
+      if (isUniqueViolation(err)) continue;
       throw err;
     }
   }

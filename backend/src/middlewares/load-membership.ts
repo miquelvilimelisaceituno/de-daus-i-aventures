@@ -1,15 +1,9 @@
 import type { Request, RequestHandler } from 'express';
-import { prisma } from '../db/prisma';
 import type { MembershipRole } from '../generated/prisma/enums';
+import * as membershipsRepository from '../repositories/memberships.repository';
+import type { CampaignMember } from '../services/campaign-member';
 import { currentUser } from './require-auth';
 
-/** Qui soc dins de la campanya de la URL. Ho omple loadMembership. */
-export interface CampaignMember {
-  userId: string;
-  campaignId: string;
-  role: MembershipRole;
-  campaignArchived: boolean;
-}
 
 declare global {
   namespace Express {
@@ -36,10 +30,7 @@ export const loadMembership: RequestHandler = async (req, res, next) => {
   }
 
   const userId = currentUser(req).uid;
-  const membership = await prisma.membership.findUnique({
-    where: { userId_campaignId: { userId, campaignId } },
-    select: { role: true, leftAt: true, campaign: { select: { archivedAt: true } } },
-  });
+  const membership = await membershipsRepository.findWithCampaignState(userId, campaignId);
 
   if (!membership || membership.leftAt) {
     res.status(403).json(NOT_MEMBER);
